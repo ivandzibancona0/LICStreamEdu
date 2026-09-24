@@ -1,0 +1,92 @@
+{
+  "courseTitle": "Masterclass de Desarrollo Web Frontend",
+  "description": "Aprende los fundamentos y técnicas avanzadas de HTML5, CSS3 moderno y JavaScript ES6+ para construir aplicaciones web de alto impacto.",
+  "notes": "# Mis Apuntes del Curso 📚\n\nBienvenido a tu **Libreta de Apuntes**. Puedes escribir ideas, fórmulas o código mientras ves cada clase.\n\n## Puntos Clave de CSS y HTML\n- Usar etiquetas semánticas (`<header>`, `<main>`, `<article>`) para accesibilidad.\n- Dominar **Flexbox** para alineaciones unidimensionales y **Grid** para bidimensionales.\n- Implementar tokens de color usando variables CSS: `--primary`, `--bg-surface`.\n\n> *\"El diseño responsivo no es una opción, es una necesidad.\"*\n\n### Código de Ejemplo:\n```css\n.container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n```",
+  "playlists": [
+    {
+      "id": "modulo-1",
+      "title": "Módulo 1: Fundamentos y Semántica Web",
+      "videos": [
+        {
+          "id": "vid-101",
+          "title": "1. Estructura y Semántica Moderna en HTML5",
+          "url": "https://www.youtube.com/watch?v=k783iVqA68A",
+          "description": "Descubre cómo organizar aplicaciones web con etiquetas semánticas, accesibilidad (ARIA) y mejores prácticas de SEO."
+        },
+        {
+          "id": "vid-102a",
+          "title": "2A. Flexbox: Fundamentos y Ejes (Fragmento 1)",
+          "url": "https://www.youtube.com/watch?v=JJSoEo8JSnc",
+          "start": "00:00",
+          "end": "08:30",
+          "description": "Primera parte: Contenedores Flex, propiedades flex-direction y eje principal."
+        },
+        {
+          "id": "vid-102b",
+          "title": "2B. Flexbox: Alineación Avanzada (Fragmento 2)",
+          "url": "https://www.youtube.com/watch?v=JJSoEo8JSnc",
+          "start": "08:30",
+          "end": "20:00",
+          "description": "Segunda parte del mismo video: justify-content, align-items y maquetación de tarjetas responsivas."
+        },
+        {
+          "id": "vid-103",
+          "title": "3. Variables CSS y Sistemas de Diseño con Temas",
+          "url": "https://www.youtube.com/watch?v=sK1ODp0nEbM",
+          "description": "Cómo estructurar tokens de diseño, paletas de colores intercambiables y modo oscuro utilizando propiedades personalizadas de CSS."
+        }
+      ]
+    },
+    {
+      "id": "modulo-2",
+      "title": "Módulo 2: JavaScript Moderno y Manipulación del DOM",
+      "videos": [
+        {
+          "id": "vid-201",
+          "title": "4. Fundamentos de JavaScript ES6+ y Funciones de Orden Superior",
+          "url": "https://www.youtube.com/watch?v=W6NZfCO5SIk",
+          "description": "Revisión de destructuring, spread operator, map, filter, reduce y promesas para código limpio y declarativo."
+        },
+        {
+          "id": "vid-202",
+          "title": "5. Manipulación Eficiente del DOM y Manejo de Eventos",
+          "url": "https://www.youtube.com/watch?v=y17RuWkWdn8",
+          "description": "Técnicas de delegación de eventos, ciclo de vida del navegador y optimización del rendimiento en Vanilla JS."
+        },
+        {
+          "id": "vid-203",
+          "title": "6. Almacenamiento en el Navegador: LocalStorage e IndexedDB",
+          "url": "https://www.youtube.com/watch?v=g3jmo3fG5lo",
+          "description": "Estrategias para persistencia local de datos en aplicaciones web desconectadas y gestión de archivos en el cliente."
+        }
+      ]
+    },
+    {
+      "id": "modulo-3",
+      "title": "Módulo 3: Proyecto Final y Optimización UX/UI",
+      "videos": [
+        {
+          "id": "vid-301",
+          "title": "7. Principios de UX/UI y Diseño Mobile-First",
+          "url": "https://www.youtube.com/watch?v=0xMQfnTU6oo",
+          "description": "Claves para diseñar pensando primero en dispositivos móviles, optimizar micro-interacciones y tiempos de respuesta."
+        },
+        {
+          "id": "vid-302",
+          "title": "8. Buenas Prácticas de Rendimiento y Despliegue",
+          "url": "https://www.youtube.com/watch?v=Bw0436Y_f1Y",
+          "description": "Consejos finales para auditar con Lighthouse, optimizar recursos multimedia y desplegar en producción."
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "res-flexbox-guide",
+      "name": "Guía Visual de Flexbox y CSS Moderno (MDN)",
+      "type": "cloud/url",
+      "isCloudLink": true,
+      "cloudUrl": "https://developer.mozilla.org/es/docs/Web/CSS/CSS_Flexible_Box_Layout"
+    }
+  ]
+}

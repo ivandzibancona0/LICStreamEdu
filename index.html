@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="obsidian">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>LICStreamEdu | Reproductor Inteligente de Cursos</title>
+  <meta name="description" content="Reproductor minimalista y moderno para cursos de YouTube con seguimiento de progreso, listas de reproducción, temas personalizables y gestor de archivos.">
+  
+  <!-- Favicon oficial -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  
+  <!-- Tipografías: Plus Jakarta Sans, Architects Daughter (manuscrita tipo Virgil/Excalidraw), Patrick Hand, Merriweather, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=JetBrains+Mono:wght@400;500;600&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Patrick+Hand&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ======================================================= -->
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR (HEADER)                   -->
+  <!-- ======================================================= -->
+  <header class="app-header">
+    <div class="header-container">
+      
+      <!-- Logotipo e Identidad -->
+      <div class="brand">
+        <img src="assets/logo.png" alt="LICStreamEdu Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <span class="brand-title">LICStreamEdu</span>
+        </div>
+      </div>
+
+      <!-- Barra de Progreso Global del Curso -->
+      <div class="course-progress-widget" id="headerProgressWidget" title="Progreso del curso actual">
+        <div class="progress-info">
+          <span class="progress-label" id="progressText">0 de 0 completados</span>
+          <span class="progress-percent" id="progressPercentage">0%</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill" id="progressBarFill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción de la Cabecera -->
+      <div class="header-actions">
+        
+        <!-- Botón Cargar JSON -->
+        <button type="button" class="btn btn-secondary btn-sm" id="btnOpenLoadJsonModal" title="Cargar curso desde archivo JSON local o nube">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span class="btn-text">Cargar JSON</span>
+        </button>
+
+        <!-- Botón Exportar JSON -->
+        <button type="button" class="btn btn-secondary btn-sm" id="btnExportJson" title="Descargar y exportar curso actual como archivo JSON">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span class="btn-text">Exportar JSON</span>
+        </button>
+
+        <!-- Botón Agregar Video Manual -->
+        <button type="button" class="btn btn-secondary btn-sm" id="btnOpenAddVideoModal" title="Agregar nuevo video manualmente">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span class="btn-text">Nuevo Video</span>
+        </button>
+
+        <!-- Botón Archivos Adjuntos (máx 10MB) -->
+        <button type="button" class="btn btn-secondary btn-sm" id="btnOpenAttachmentsModal" title="Archivos adicionales y recursos del curso">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+          </svg>
+          <span class="btn-text">Recursos</span>
+          <span class="badge" id="attachmentsCountBadge">0</span>
+        </button>
+
+        <!-- Botón Iniciar Recorrido Guiado -->
+        <button type="button" class="btn btn-icon btn-sm" id="btnStartTour" title="Iniciar recorrido guiado (Tour)" aria-label="Iniciar recorrido guiado">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+          </svg>
+        </button>
+
+        <!-- Botón Selector de Temas -->
+        <button type="button" class="btn btn-icon btn-sm" id="btnOpenThemeModal" title="Cambiar tema de color" aria-label="Cambiar tema de color">
+          <span class="theme-current-dot" id="currentThemeDot"></span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 10 10 0 0 0 0-20"></path>
+          </svg>
+        </button>
+
+        <!-- Botón Alternar Menú Lateral Móvil -->
+        <button type="button" class="btn btn-icon mobile-menu-toggle" id="btnToggleMobileSidebar" aria-label="Abrir lista de videos">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner de advertencia si se abre como file:// (Causa del Error 153 de YouTube) -->
+  <div class="protocol-warning-banner hidden" id="protocolWarningBanner">
+    <div class="protocol-warning-content">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <div class="protocol-warning-text">
+        <strong>Aviso sobre Error 153 de YouTube:</strong> Estás abriendo la aplicación como archivo local (<code>file:///</code>). Por políticas de seguridad, YouTube bloquea reproductores embebidos sin un origen HTTP.
+      </div>
+      <a href="http://localhost:8080" class="btn btn-sm btn-primary" id="btnOpenLocalhost">
+        Abrir en localhost:8080
+      </a>
+      <button type="button" class="btn btn-icon btn-xs" id="btnCloseProtocolWarning" aria-label="Cerrar aviso">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- CONTENEDOR PRINCIPAL (LAYOUT RESPONSIVO)                -->
+  <!-- ======================================================= -->
+  <main class="app-layout">
+    
+    <!-- COLUMNA PRINCIPAL: REPRODUCTOR Y DETALLES DEL VIDEO -->
+    <section class="player-column">
+      
+      <!-- Contenedor del Reproductor Embebido 16:9 -->
+      <div class="video-container" id="videoContainer">
+        <!-- El iframe se inyecta dinámicamente mediante JavaScript -->
+        <div class="empty-player-state" id="emptyPlayerState">
+          <div class="empty-icon" aria-hidden="true">
+            <img src="assets/logo.png" alt="LICStreamEdu" class="empty-logo-img">
+          </div>
+          <h3>Ningún video en reproducción</h3>
+          <p>Carga un archivo JSON de curso o agrega un nuevo video para comenzar.</p>
+          <div class="empty-actions">
+            <button type="button" class="btn btn-primary" id="btnLoadDemoCourse">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              Cargar Curso de Demostración
+            </button>
+            <button type="button" class="btn btn-secondary" id="btnEmptyLoadJson">
+              Cargar archivo JSON
+            </button>
+          </div>
+        </div>
+
+        <iframe 
+          id="youtubeIframe" 
+          class="video-iframe hidden"
+          title="Reproductor de Video de YouTube"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <!-- Barra de Acciones del Reproductor -->
+      <div class="player-controls-bar">
+        <div class="controls-left">
+          <!-- Botón de Marcar como Visto / No Visto -->
+          <button type="button" class="btn btn-check" id="btnToggleWatched" disabled>
+            <span class="check-box-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </span>
+            <span id="btnWatchedLabel">Marcar como completado</span>
+          </button>
+        </div>
+
+        <div class="controls-right">
+          <!-- Navegación Anterior / Siguiente -->
+          <button type="button" class="btn btn-icon btn-secondary" id="btnPrevVideo" title="Video anterior" disabled aria-label="Video anterior">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="19 20 9 12 19 4 19 20"></polygon>
+              <line x1="5" y1="19" x2="5" y2="5"></line>
+            </svg>
+          </button>
+          
+          <button type="button" class="btn btn-icon btn-secondary" id="btnNextVideo" title="Siguiente video" disabled aria-label="Siguiente video">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="5 4 15 12 5 20 5 4"></polygon>
+              <line x1="19" y1="5" x2="19" y2="19"></line>
+            </svg>
+          </button>
+
+          <!-- Enlace Externo a YouTube -->
+          <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-icon btn-secondary" id="btnOpenYouTubeExternal" title="Abrir en YouTube" aria-label="Abrir en YouTube">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Tarjeta de Información del Video Actual -->
+      <article class="video-meta-card">
+        <div class="video-meta-header">
+          <div class="meta-tags">
+            <span class="module-badge" id="currentModuleBadge">Módulo 1</span>
+            <span class="status-badge" id="currentStatusBadge">Pendiente</span>
+          </div>
+          <h1 class="video-title" id="currentVideoTitle">Selecciona una lección para comenzar</h1>
+        </div>
+        
+        <div class="video-description-box">
+          <p class="video-description-text" id="currentVideoDescription">
+            La descripción detallada del video seleccionado aparecerá en este apartado.
+          </p>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- COLUMNA LATERAL: PLAYLIST / MÓDULOS DE VIDEOS -->
+    <aside class="playlist-sidebar" id="playlistSidebar">
+      
+      <!-- Cabecera de la Barra Lateral -->
+      <div class="sidebar-header">
+        <div class="sidebar-title-row">
+          <div class="sidebar-title-wrap">
+            <div class="sidebar-title-heading-wrap">
+              <h2 class="sidebar-title" id="sidebarCourseTitle" title="Clic para renombrar el curso">Contenido del Curso</h2>
+              <button type="button" class="btn btn-icon btn-xs sidebar-edit-title-btn" id="btnEditCourseTitle" title="Renombrar curso" aria-label="Renombrar curso">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+              </button>
+              <button type="button" class="btn btn-icon btn-xs sidebar-close-course-btn" id="btnCloseCourse" title="Cerrar curso actual y comenzar uno nuevo" aria-label="Cerrar curso actual">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </button>
+            </div>
+            <span class="sidebar-video-count" id="sidebarTotalCount">0 videos</span>
+          </div>
+          <button type="button" class="btn btn-icon btn-xs sidebar-close-btn" id="btnCloseMobileSidebar" aria-label="Cerrar panel de lista">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Buscador de Lecciones -->
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar lección o tema..." aria-label="Buscar lección">
+          <button type="button" class="search-clear-btn hidden" id="btnClearSearch" aria-label="Borrar búsqueda">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Filtros de Estado: Todos / Pendientes / Completados -->
+        <div class="filter-tabs" role="tablist">
+          <button type="button" class="filter-tab active" data-filter="all" role="tab" aria-selected="true">
+            Todos (<span id="filterCountAll">0</span>)
+          </button>
+          <button type="button" class="filter-tab" data-filter="pending" role="tab" aria-selected="false">
+            Pendientes (<span id="filterCountPending">0</span>)
+          </button>
+          <button type="button" class="filter-tab" data-filter="completed" role="tab" aria-selected="false">
+            Listos (<span id="filterCountCompleted">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenedor con Scroll de Módulos y Videos -->
+      <div class="playlist-accordion-container" id="playlistContainer">
+        <!-- Generado dinámicamente con JavaScript -->
+      </div>
+
+      <!-- Pie de la Barra Lateral: Botón de Crear Módulo / Lista Rápida -->
+      <div class="sidebar-footer">
+        <button type="button" class="btn btn-ghost btn-sm btn-block" id="btnCreateNewModule">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Crear Nuevo Módulo / Lista
+        </button>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- Overlay para oscurecer el fondo en móviles al abrir la barra lateral -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 1: CARGAR CURSO JSON (LOCAL O NUBE)               -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalLoadJson" aria-hidden="true" role="dialog" aria-labelledby="modalLoadJsonTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <h2 class="modal-title" id="modalLoadJsonTitle">Cargar Curso desde JSON</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalLoadJson" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Zona 1: Subida de archivo local con Drag & Drop -->
+        <div class="upload-dropzone" id="jsonDropzone">
+          <input type="file" id="jsonFileInput" accept=".json,application/json" class="file-input-hidden">
+          <div class="dropzone-content">
+            <div class="dropzone-icon" aria-hidden="true">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+              </svg>
+            </div>
+            <p class="dropzone-title">Arrastra tu archivo <strong>.json</strong> aquí</p>
+            <p class="dropzone-subtitle">o haz clic para explorar en tu equipo</p>
+          </div>
+        </div>
+
+        <div class="modal-divider">
+          <span>O CARGAR DESDE LA NUBE</span>
+        </div>
+
+        <!-- Zona 2: Enlace JSON en la nube -->
+        <div class="form-group">
+          <label for="jsonUrlInput" class="form-label">URL del archivo JSON remoto</label>
+          <div class="input-with-button">
+            <input type="url" id="jsonUrlInput" class="form-input" placeholder="https://ejemplo.com/curso.json">
+            <button type="button" class="btn btn-secondary" id="btnFetchJsonUrl">Cargar URL</button>
+          </div>
+        </div>
+
+        <!-- Botón Rápido Demo -->
+        <div class="demo-prompt-card">
+          <div class="demo-prompt-info">
+            <strong>¿Quieres probarlo de inmediato?</strong>
+            <span>Carga el curso de demostración de Desarrollo Web Frontend integrado.</span>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" id="btnLoadSampleCourseModal">
+            Cargar Demo
+          </button>
+        </div>
+
+        <!-- Mensaje de estado/error -->
+        <div class="modal-feedback-alert hidden" id="jsonFeedbackAlert"></div>
+
+        <!-- Guía de Formato Colapsable -->
+        <details class="json-format-guide">
+          <summary>Ver estructura JSON admitida</summary>
+          <pre><code>{
+  "courseTitle": "Nombre del Curso",
+  "description": "Descripción opcional",
+  "playlists": [
+    {
+      "title": "Módulo 1: Introducción",
+      "videos": [
+        {
+          "title": "1. Lección completa",
+          "url": "https://www.youtube.com/watch?v=ID_VIDEO",
+          "description": "Video reproducido completo"
+        },
+        {
+          "title": "2. Fragmento de video largo",
+          "url": "https://www.youtube.com/watch?v=ID_VIDEO",
+          "start": "02:15",
+          "end": "14:40",
+          "description": "Se reproduce solo de 02:15 a 14:40"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+        </details>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 2: AGREGAR VIDEO MANUALMENTE                      -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalAddVideo" aria-hidden="true" role="dialog" aria-labelledby="modalAddVideoTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          <h2 class="modal-title" id="modalAddVideoTitle">Agregar Video a la Lista</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalAddVideo" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="formAddVideo" class="modal-body">
+        
+        <!-- Enlace de YouTube con vista previa dinámica -->
+        <div class="form-group">
+          <label for="manualVideoUrl" class="form-label">Enlace de YouTube *</label>
+          <input 
+            type="url" 
+            id="manualVideoUrl" 
+            class="form-input" 
+            placeholder="https://www.youtube.com/watch?v=..." 
+            required>
+          <span class="form-hint">Soporta enlaces normales, formato corto youtu.be o shorts.</span>
+        </div>
+
+        <!-- Vista previa de miniatura si el ID es detectado -->
+        <div class="video-preview-box hidden" id="manualVideoPreviewBox">
+          <img id="manualVideoPreviewThumb" src="" alt="Vista previa de miniatura" class="preview-thumbnail">
+          <div class="preview-meta">
+            <span class="preview-badge">ID Detectado</span>
+            <span class="preview-id" id="manualVideoPreviewId"></span>
+          </div>
+        </div>
+
+        <!-- Título del video -->
+        <div class="form-group">
+          <label for="manualVideoTitle" class="form-label">Título de la lección *</label>
+          <input 
+            type="text" 
+            id="manualVideoTitle" 
+            class="form-input" 
+            placeholder="Ej: Lección 1 - Introducción práctica" 
+            required>
+        </div>
+
+        <!-- Fraccionar video por minutos (Opcional) -->
+        <div class="form-group">
+          <label class="form-label">Fraccionar video por minutos (Opcional)</label>
+          <div class="time-range-grid">
+            <div class="time-field">
+              <label for="manualVideoStart" class="form-sublabel">Inicio (MM:SS o segundos)</label>
+              <input 
+                type="text" 
+                id="manualVideoStart" 
+                class="form-input" 
+                placeholder="00:00">
+            </div>
+            <div class="time-field">
+              <label for="manualVideoEnd" class="form-sublabel">Fin (MM:SS o segundos)</label>
+              <input 
+                type="text" 
+                id="manualVideoEnd" 
+                class="form-input" 
+                placeholder="15:30">
+            </div>
+          </div>
+          <span class="form-hint">Si defines inicio y fin, el video solo se reproducirá en ese rango y se detendrá solo.</span>
+        </div>
+
+        <!-- Destino: Módulo / Lista -->
+        <div class="form-group">
+          <label for="manualVideoPlaylistSelect" class="form-label">Módulo o Lista de destino</label>
+          <select id="manualVideoPlaylistSelect" class="form-select">
+            <!-- Rellenado dinámicamente con las listas actuales -->
+            <option value="NEW_PLAYLIST">+ Crear nueva lista / módulo...</option>
+          </select>
+        </div>
+
+        <!-- Nombre de nuevo módulo (condicional si se elige crear nuevo) -->
+        <div class="form-group hidden" id="newPlaylistInputGroup">
+          <label for="newPlaylistTitleInput" class="form-label">Nombre del nuevo módulo *</label>
+          <input 
+            type="text" 
+            id="newPlaylistTitleInput" 
+            class="form-input" 
+            placeholder="Ej: Módulo 4: Proyecto Avanzado">
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group">
+          <label for="manualVideoDesc" class="form-label">Descripción o notas (opcional)</label>
+          <textarea 
+            id="manualVideoDesc" 
+            class="form-textarea" 
+            rows="3" 
+            placeholder="Escribe un breve resumen de los conceptos abordados en esta lección..."></textarea>
+        </div>
+
+        <div class="modal-feedback-alert hidden" id="manualVideoAlert"></div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalAddVideo">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitAddVideo">Guardar Video</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 2B: EDITAR LECCIÓN / VIDEO                        -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalEditVideo" aria-hidden="true" role="dialog" aria-labelledby="modalEditVideoTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--primary);">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <h2 class="modal-title" id="modalEditVideoTitle">Editar Lección / Video</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalEditVideo" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="formEditVideo" class="modal-body">
+        <input type="hidden" id="editVideoIdInput">
+
+        <!-- Enlace de YouTube con vista previa dinámica -->
+        <div class="form-group">
+          <label for="editVideoUrl" class="form-label">Enlace de YouTube *</label>
+          <input 
+            type="url" 
+            id="editVideoUrl" 
+            class="form-input" 
+            placeholder="https://www.youtube.com/watch?v=..." 
+            required>
+          <span class="form-hint">Soporta enlaces normales, formato corto youtu.be o shorts.</span>
+        </div>
+
+        <!-- Vista previa de miniatura si el ID es detectado -->
+        <div class="video-preview-box hidden" id="editVideoPreviewBox">
+          <img id="editVideoPreviewThumb" src="" alt="Vista previa de miniatura" class="preview-thumbnail">
+          <div class="preview-meta">
+            <span class="preview-badge">ID Detectado</span>
+            <span class="preview-id" id="editVideoPreviewId"></span>
+          </div>
+        </div>
+
+        <!-- Título del video -->
+        <div class="form-group">
+          <label for="editVideoTitleInput" class="form-label">Título de la lección *</label>
+          <input 
+            type="text" 
+            id="editVideoTitleInput" 
+            class="form-input" 
+            placeholder="Ej: Lección 1 - Introducción práctica" 
+            required>
+        </div>
+
+        <!-- Fraccionar video por minutos (Opcional) -->
+        <div class="form-group">
+          <label class="form-label">Fraccionar video por minutos (Opcional)</label>
+          <div class="time-range-grid">
+            <div class="time-field">
+              <label for="editVideoStart" class="form-sublabel">Inicio (MM:SS o segundos)</label>
+              <input 
+                type="text" 
+                id="editVideoStart" 
+                class="form-input" 
+                placeholder="00:00">
+            </div>
+            <div class="time-field">
+              <label for="editVideoEnd" class="form-sublabel">Fin (MM:SS o segundos)</label>
+              <input 
+                type="text" 
+                id="editVideoEnd" 
+                class="form-input" 
+                placeholder="15:30">
+            </div>
+          </div>
+          <span class="form-hint">Define los puntos de inicio y fin para reproducir solo el fragmento relevante.</span>
+        </div>
+
+        <!-- Módulo o Lista de destino -->
+        <div class="form-group">
+          <label for="editVideoPlaylistSelect" class="form-label">Módulo o Lista</label>
+          <select id="editVideoPlaylistSelect" class="form-select">
+            <!-- Rellenado dinámicamente con las listas actuales -->
+          </select>
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group">
+          <label for="editVideoDesc" class="form-label">Descripción o notas (opcional)</label>
+          <textarea 
+            id="editVideoDesc" 
+            class="form-textarea" 
+            rows="3" 
+            placeholder="Escribe un breve resumen de los conceptos abordados en esta lección..."></textarea>
+        </div>
+
+        <div class="modal-feedback-alert hidden" id="editVideoAlert"></div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalEditVideo">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitEditVideo">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 3: GESTOR DE ARCHIVOS ADICIONALES (MÁX 10 MB)     -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalAttachments" aria-hidden="true" role="dialog" aria-labelledby="modalAttachmentsTitle">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+          </svg>
+          <h2 class="modal-title" id="modalAttachmentsTitle">Archivos Adicionales del Curso</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalAttachments" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Pestañas: Subir Local vs Enlace Nube -->
+        <div class="attachment-tabs">
+          <button type="button" class="attachment-tab-btn active" id="tabBtnLocalUpload">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Subir Archivo Local (Máx. 10 MB)
+          </button>
+          <button type="button" class="attachment-tab-btn" id="tabBtnCloudLink">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            Vincular Enlace en la Nube
+          </button>
+        </div>
+
+        <!-- Panel 1: Subida Local -->
+        <div class="attachment-panel" id="panelLocalUpload">
+          <div class="upload-dropzone attachment-dropzone" id="attachmentDropzone">
+            <input type="file" id="attachmentFileInput" class="file-input-hidden">
+            <div class="dropzone-content">
+              <div class="dropzone-icon" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                  <polyline points="13 2 13 9 20 9"></polyline>
+                </svg>
+              </div>
+              <p class="dropzone-title">Arrastra aquí PDFs, diapositivas, código o apuntes</p>
+              <p class="dropzone-subtitle">o haz clic para seleccionar (Tamaño máximo: <strong>10 MB</strong>)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Enlace en la Nube -->
+        <div class="attachment-panel hidden" id="panelCloudLink">
+          <form id="formCloudAttachment" class="form-grid">
+            <div class="form-group">
+              <label for="cloudAttachmentTitle" class="form-label">Nombre del recurso</label>
+              <input type="text" id="cloudAttachmentTitle" class="form-input" placeholder="Ej: Diapositivas en Google Drive" required>
+            </div>
+            <div class="form-group">
+              <label for="cloudAttachmentUrl" class="form-label">Enlace web (Google Drive, Dropbox, GitHub, etc.)</label>
+              <input type="url" id="cloudAttachmentUrl" class="form-input" placeholder="https://..." required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Agregar Enlace</button>
+          </form>
+        </div>
+
+        <div class="modal-feedback-alert hidden" id="attachmentAlert"></div>
+
+        <!-- Lista de Archivos Cargados -->
+        <div class="attachments-list-section">
+          <h3 class="section-subtitle">Archivos y Enlaces Guardados (<span id="attachmentsListCount">0</span>)</h3>
+          
+          <div class="attachments-table-container" id="attachmentsListContainer">
+            <!-- Generado dinámicamente con JavaScript -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 4: SELECTOR DE TEMAS DE COLOR (6 PALETAS)         -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalThemeSelector" aria-hidden="true" role="dialog" aria-labelledby="modalThemeTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 10 10 0 0 0 0-20"></path>
+          </svg>
+          <h2 class="modal-title" id="modalThemeTitle">Personalizar Tema de Color</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalThemeSelector" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-subtitle">Selecciona una de las 6 paletas de diseño predefinidas. Tu preferencia se guardará automáticamente.</p>
+        <div class="themes-grid" id="themesGridContainer">
+          <!-- Generado dinámicamente desde themes.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 5: CREAR NUEVO MÓDULO / LISTA                     -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalCreateModule" aria-hidden="true" role="dialog" aria-labelledby="modalCreateModuleTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            <line x1="12" y1="11" x2="12" y2="17"></line>
+            <line x1="9" y1="14" x2="15" y2="14"></line>
+          </svg>
+          <h2 class="modal-title" id="modalCreateModuleTitle">Crear Nuevo Módulo / Lista</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalCreateModule" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="formCreateModule" class="modal-body">
+        <p class="modal-subtitle">Ingresa un nombre descriptivo para agrupar lecciones y organizar la estructura de tu curso.</p>
+
+        <div class="form-group">
+          <label for="inputModuleName" class="form-label">Nombre del nuevo módulo o lista *</label>
+          <input 
+            type="text" 
+            id="inputModuleName" 
+            class="form-input" 
+            placeholder="Ej: Módulo 1 - Fundamentos y Arquitectura" 
+            required 
+            autocomplete="off">
+          <span class="form-hint">Aparecerá en el acordeón de la barra lateral y en los selectores de lecciones.</span>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalCreateModule">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitCreateModule">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Crear Módulo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 6: RENOMBRAR / EDITAR MÓDULO                      -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalEditModule" aria-hidden="true" role="dialog" aria-labelledby="modalEditModuleTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <h2 class="modal-title" id="modalEditModuleTitle">Renombrar Módulo / Lista</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalEditModule" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="formEditModule" class="modal-body">
+        <input type="hidden" id="editModuleIdInput">
+        <p class="modal-subtitle">Modifica el título del módulo. Los videos y su progreso se conservarán intactos.</p>
+
+        <div class="form-group">
+          <label for="editModuleNameInput" class="form-label">Nuevo nombre del módulo *</label>
+          <input 
+            type="text" 
+            id="editModuleNameInput" 
+            class="form-input" 
+            placeholder="Ej: Módulo 1 - Fundamentos" 
+            required 
+            autocomplete="off">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalEditModule">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitEditModule">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 6B: RENOMBRAR TÍTULO PRINCIPAL DEL CURSO          -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalEditCourseTitle" aria-hidden="true" role="dialog" aria-labelledby="modalEditCourseTitleHeader">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--primary);">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <h2 class="modal-title" id="modalEditCourseTitleHeader">Renombrar Curso</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalEditCourseTitle" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="formEditCourseTitle" class="modal-body">
+        <p class="modal-subtitle">Personaliza el nombre de tu curso. El nuevo título se reflejará en la interfaz y al exportar tu archivo JSON.</p>
+
+        <div class="form-group">
+          <label for="editCourseTitleInput" class="form-label">Nombre del curso *</label>
+          <input 
+            type="text" 
+            id="editCourseTitleInput" 
+            class="form-input" 
+            placeholder="Ej: Curso de Inglés - Nivel Principiante" 
+            required 
+            autocomplete="off">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalEditCourseTitle">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitEditCourseTitle">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Guardar Nombre
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 6C: CONFIRMAR CIERRE / DESCONEXIÓN DE CURSO       -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalCloseCourse" aria-hidden="true" role="dialog" aria-labelledby="modalCloseCourseTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--danger);">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <h2 class="modal-title" id="modalCloseCourseTitle">Cerrar Curso Actual</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalCloseCourse" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-subtitle" id="closeCourseSubtitle">¿Deseas cerrar el curso actual para comenzar uno nuevo?</p>
+        
+        <div class="modal-feedback-alert error" style="margin-top: 12px; margin-bottom: 16px;">
+          Esta acción limpiará el reproductor y las lecciones de la pantalla. Si no has respaldado tu curso en un archivo JSON, usa el botón <strong>«Exportar y Cerrar»</strong> para no perder tus avances.
+        </div>
+
+        <div class="modal-footer" style="margin-top: 16px; flex-wrap: wrap; gap: 8px;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalCloseCourse">Cancelar</button>
+          
+          <button type="button" class="btn btn-secondary" id="btnExportAndCloseCourse" title="Descargar respaldo JSON y limpiar pantalla">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Exportar y Cerrar
+          </button>
+
+          <button type="button" class="btn btn-danger" id="btnConfirmCloseCourse">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Cerrar Curso
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 7: CONFIRMAR ELIMINACIÓN DE MÓDULO                -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalDeleteModule" aria-hidden="true" role="dialog" aria-labelledby="modalDeleteModuleTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--danger);">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          <h2 class="modal-title" id="modalDeleteModuleTitle">Eliminar Módulo</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalDeleteModule" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="deleteModuleIdInput">
+        <p class="modal-subtitle" id="deleteModuleWarningText">¿Estás seguro de que deseas eliminar este módulo?</p>
+        <div class="modal-feedback-alert error" id="deleteModuleAlertBox" style="margin-top: 10px;">
+          Esta acción no se puede deshacer. Se eliminarán todas las lecciones contenidas en este módulo.
+        </div>
+
+        <div class="modal-footer" style="margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalDeleteModule">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="btnConfirmDeleteModule">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Eliminar Módulo
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 8: CONFIRMAR ELIMINACIÓN DE VIDEO                 -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalDeleteVideo" aria-hidden="true" role="dialog" aria-labelledby="modalDeleteVideoTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--danger);">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          <h2 class="modal-title" id="modalDeleteVideoTitle">Eliminar Video de la Lista</h2>
+        </div>
+        <button type="button" class="btn btn-icon btn-xs modal-close-btn" data-close-modal="modalDeleteVideo" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="deleteVideoIdInput">
+        <p class="modal-subtitle" id="deleteVideoWarningText">¿Deseas eliminar este video de la lista de reproducción?</p>
+        <div class="modal-feedback-alert error" style="margin-top: 10px;">
+          Esta acción removerá esta lección del curso. Si estaba marcada como completada, se actualizará el porcentaje de progreso.
+        </div>
+
+        <div class="modal-footer" style="margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalDeleteVideo">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="btnConfirmDeleteVideo">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Eliminar Video
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL 9: BIENVENIDA / ONBOARDING                        -->
+  <!-- ======================================================= -->
+  <div class="modal-backdrop" id="modalWelcomeOnboarding" aria-hidden="true" role="dialog" aria-labelledby="modalWelcomeTitle">
+    <div class="modal-card modal-welcome">
+      <div class="welcome-header">
+        <img src="assets/logo.png" alt="LICStreamEdu" class="welcome-logo-img">
+        <h2 class="welcome-title" id="modalWelcomeTitle">¡Te damos la bienvenida a LICStreamEdu!</h2>
+        <p class="welcome-subtitle">
+          Tu reproductor inteligente para estudiar cursos de YouTube con seguimiento de progreso, control por minutos y libreta de notas en Markdown.
+        </p>
+      </div>
+
+      <div class="welcome-options-grid">
+        <!-- Opción A: Cargar Curso Demo + Tour (Recomendado) -->
+        <div class="welcome-card welcome-card-featured">
+          <span class="welcome-badge">Recomendado</span>
+          <div class="welcome-card-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            </svg>
+          </div>
+          <h3 class="welcome-card-title">Explorar Curso Demo</h3>
+          <p class="welcome-card-desc">
+            Carga un curso de ejemplo con 3 módulos y 8 lecciones, acompañado de un breve recorrido guiado interactivo.
+          </p>
+          <button type="button" class="btn btn-primary btn-block" id="btnOnboardingDemo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Iniciar con Demo y Tour</span>
+          </button>
+        </div>
+
+        <!-- Opción B: Comenzar desde cero -->
+        <div class="welcome-card">
+          <div class="welcome-card-icon secondary">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <h3 class="welcome-card-title">Comenzar desde Cero</h3>
+          <p class="welcome-card-desc">
+            Arranca con un espacio de estudio en limpio para cargar tu propio archivo JSON o agregar videos manualmente.
+          </p>
+          <button type="button" class="btn btn-secondary btn-block" id="btnOnboardingClean">
+            <span>Comenzar en Limpio</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- PESTAÑA LATERAL FIJA "LIBRETA" (DISPARADOR DEL DRAWER)  -->
+  <!-- ======================================================= -->
+  <button type="button" class="notes-tab-trigger" id="notesDrawerTrigger" title="Abrir Libreta de Apuntes" aria-label="Abrir Libreta de Apuntes">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      <line x1="9" y1="7" x2="15" y2="7"></line>
+      <line x1="9" y1="11" x2="13" y2="11"></line>
+    </svg>
+    <span class="notes-tab-label">Libreta</span>
+  </button>
+
+  <!-- Overlay para oscurecer el fondo cuando el Drawer esté abierto -->
+  <div class="notes-backdrop" id="notesDrawerBackdrop" aria-hidden="true"></div>
+
+  <!-- ======================================================= -->
+  <!-- DRAWER: LIBRETA DE APUNTES                              -->
+  <!-- ======================================================= -->
+  <aside class="notes-drawer" id="notesDrawer" aria-hidden="true" role="dialog" aria-labelledby="notesDrawerTitle">
+    
+    <!-- Cabecera del Drawer -->
+    <div class="notes-header">
+      <div class="notes-header-left">
+        <button type="button" class="btn btn-icon btn-sm notes-close-btn" id="btnCloseNotesDrawer" aria-label="Cerrar libreta de apuntes" title="Cerrar libreta">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="notes-title-wrap">
+          <h3 class="notes-title" id="notesDrawerTitle">Libreta de apuntes</h3>
+          <span class="notes-save-badge" id="notesSaveStatus">Guardado ✓</span>
+        </div>
+      </div>
+
+      <!-- Alternador de Vista (Editor / Vista Previa Markdown) -->
+      <div class="notes-view-toggle">
+        <button type="button" class="notes-toggle-btn active" id="btnNotesViewEditor" title="Modo edición Markdown">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>Editor</span>
+        </button>
+        <button type="button" class="notes-toggle-btn" id="btnNotesViewPreview" title="Vista previa con formato renderizado">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span>Vista Previa</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Barra de Herramientas Visual de Formato -->
+    <div class="notes-toolbar">
+      
+      <!-- Fila 1: Tipografía, Tamaño y Color -->
+      <div class="notes-toolbar-row">
+        <!-- Selector de Familia Tipográfica (5 Fuentes) -->
+        <select class="notes-select" id="notesFontSelect" title="Tipo de letra" aria-label="Seleccionar tipografía">
+          <option value="font-architects">Architects (Mano alzada)</option>
+          <option value="font-jakarta" selected>Plus Jakarta (Sans)</option>
+          <option value="font-merriweather">Merriweather (Serif)</option>
+          <option value="font-jetbrains">JetBrains (Código Mono)</option>
+          <option value="font-patrick">Patrick Hand (Escolar)</option>
+        </select>
+
+        <!-- Selector de Tamaño de Fuente -->
+        <select class="notes-select notes-select-sm" id="notesFontSizeSelect" title="Tamaño de texto" aria-label="Tamaño de texto">
+          <option value="13px">13 px</option>
+          <option value="15px" selected>15 px</option>
+          <option value="18px">18 px</option>
+          <option value="21px">21 px</option>
+        </select>
+
+        <!-- Selector de Color de Texto -->
+        <div class="notes-color-picker-wrap" title="Color de texto">
+          <label for="notesColorInput" class="notes-color-label" aria-label="Cambiar color del texto">
+            <span class="notes-color-swatch" id="notesColorPreviewSwatch"></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+            </svg>
+          </label>
+          <input type="color" id="notesColorInput" value="#6366f1" class="notes-color-input">
+        </div>
+      </div>
+
+      <!-- Fila 2: Formatos Rápidos de Markdown -->
+      <div class="notes-toolbar-row notes-toolbar-buttons">
+        
+        <!-- Encabezados H1, H2, H3 -->
+        <button type="button" class="notes-tool-btn" data-tool="h1" title="Encabezado H1 (# )"><strong>H1</strong></button>
+        <button type="button" class="notes-tool-btn" data-tool="h2" title="Encabezado H2 (## )"><strong>H2</strong></button>
+        <button type="button" class="notes-tool-btn" data-tool="h3" title="Encabezado H3 (### )"><strong>H3</strong></button>
+        
+        <span class="notes-tool-separator"></span>
+
+        <!-- Negrita, Cursiva -->
+        <button type="button" class="notes-tool-btn" data-tool="bold" title="Negrita (**texto**)">
+          <strong>B</strong>
+        </button>
+        <button type="button" class="notes-tool-btn" data-tool="italic" title="Cursiva (*texto*)">
+          <em>I</em>
+        </button>
+
+        <span class="notes-tool-separator"></span>
+
+        <!-- Lista, Cita, Código -->
+        <button type="button" class="notes-tool-btn" data-tool="list" title="Lista con viñetas (- )">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </button>
+        <button type="button" class="notes-tool-btn" data-tool="quote" title="Cita (> )">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
+            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
+          </svg>
+        </button>
+        <button type="button" class="notes-tool-btn" data-tool="code" title="Código (`código`)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Área de Contenido: Editor / Vista Previa -->
+    <div class="notes-body">
+      <!-- Editor Markdown (Textarea) -->
+      <textarea 
+        id="notesTextarea" 
+        class="notes-editor font-jakarta" 
+        placeholder="Escribe tus apuntes aquí en formato Markdown...&#10;&#10;# Conceptos clave&#10;- Punto 1&#10;- Punto 2"
+        spellcheck="true"
+        aria-label="Contenido de apuntes"></textarea>
+      
+      <!-- Contenedor de Vista Previa Renderizada (Oculto por defecto) -->
+      <div id="notesPreviewContainer" class="notes-preview font-jakarta hidden"></div>
+    </div>
+
+    <!-- Pie del Drawer: Botones Anexar y Descargar -->
+    <div class="notes-footer">
+      <!-- Input oculto para anexar archivos .md o .txt (se activa únicamente al hacer clic en el botón Anexar) -->
+      <input type="file" id="notesFileInput" accept=".md,.txt,text/plain,text/markdown" style="display: none;">
+
+      <button type="button" class="btn btn-secondary btn-sm" id="btnAppendNotesFile" title="Anexar contenido de un archivo .md o .txt al final de los apuntes">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+        </svg>
+        <span>Anexar archivo</span>
+      </button>
+
+      <button type="button" class="btn btn-primary btn-sm" id="btnDownloadNotes" title="Descargar apuntes en archivo .md con nombre personalizado">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Descargar .md</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- Notificaciones Toast Flotantes -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- ======================================================= -->
+  <!-- CARGA DE SCRIPTS MODULARES (ES6 VANILLA)                -->
+  <!-- ======================================================= -->
+  <script src="js/storage.js?v=1.1"></script>
+  <script src="js/youtube.js?v=1.1"></script>
+  <script src="js/themes.js?v=1.1"></script>
+  <script src="js/courses.js?v=1.1"></script>
+  <script src="js/attachments.js?v=1.1"></script>
+  <script src="js/notes.js?v=1.1"></script>
+  <script src="js/tour.js?v=1.1"></script>
+  <script src="js/app.js?v=1.1"></script>
+
+</body>
+</html>
