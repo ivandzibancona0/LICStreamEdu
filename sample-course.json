@@ -10,7 +10,7 @@
         {
           "id": "vid-101",
           "title": "1. Estructura y Semántica Moderna en HTML5",
-          "url": "https://www.youtube.com/watch?v=k783iVqA68A",
+          "url": "https://www.youtube.com/watch?v=UB1O30fR-EE",
           "description": "Descubre cómo organizar aplicaciones web con etiquetas semánticas, accesibilidad (ARIA) y mejores prácticas de SEO."
         },
         {
@@ -32,7 +32,7 @@
         {
           "id": "vid-103",
           "title": "3. Variables CSS y Sistemas de Diseño con Temas",
-          "url": "https://www.youtube.com/watch?v=sK1ODp0nEbM",
+          "url": "https://www.youtube.com/watch?v=PHO6TBq_auI",
           "description": "Cómo estructurar tokens de diseño, paletas de colores intercambiables y modo oscuro utilizando propiedades personalizadas de CSS."
         }
       ]
@@ -56,7 +56,7 @@
         {
           "id": "vid-203",
           "title": "6. Almacenamiento en el Navegador: LocalStorage e IndexedDB",
-          "url": "https://www.youtube.com/watch?v=g3jmo3fG5lo",
+          "url": "https://www.youtube.com/watch?v=GihQAC1I39Q",
           "description": "Estrategias para persistencia local de datos en aplicaciones web desconectadas y gestión de archivos en el cliente."
         }
       ]
@@ -74,7 +74,7 @@
         {
           "id": "vid-302",
           "title": "8. Buenas Prácticas de Rendimiento y Despliegue",
-          "url": "https://www.youtube.com/watch?v=Bw0436Y_f1Y",
+          "url": "https://www.youtube.com/watch?v=0fONene3OIA",
           "description": "Consejos finales para auditar con Lighthouse, optimizar recursos multimedia y desplegar en producción."
         }
       ]

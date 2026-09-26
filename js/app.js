@@ -1323,7 +1323,7 @@ function setupAppEvents() {
               {
                 id: 'v-1',
                 title: '1. Estructura y Semántica Moderna en HTML5',
-                url: 'https://www.youtube.com/watch?v=k783iVqA68A',
+                url: 'https://www.youtube.com/watch?v=UB1O30fR-EE',
                 description: 'Organiza aplicaciones con etiquetas semánticas y buenas prácticas.'
               },
               {
@@ -1568,6 +1568,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 2. Inicializar gestor de cursos (carga desde localStorage)
   courseManager.init();
+
+  // Auto-migración de enlaces obsoletos en el curso demo almacenado en localStorage
+  if (courseManager.course && courseManager.course.courseTitle === 'Masterclass de Desarrollo Web Frontend') {
+    const urlReplacements = {
+      'k783iVqA68A': 'UB1O30fR-EE',
+      'sK1ODp0nEbM': 'PHO6TBq_auI',
+      'g3jmo3fG5lo': 'GihQAC1I39Q',
+      'Bw0436Y_f1Y': '0fONene3OIA'
+    };
+    let updated = false;
+    courseManager.course.playlists?.forEach(playlist => {
+      playlist.videos?.forEach(video => {
+        for (const [oldId, newId] of Object.entries(urlReplacements)) {
+          if (video.url && video.url.includes(oldId)) {
+            video.url = video.url.replace(oldId, newId);
+            updated = true;
+          }
+        }
+      });
+    });
+    if (updated) {
+      try {
+        LocalStorageManager.set(STORAGE_KEYS.COURSE_DATA, courseManager.course);
+      } catch (e) {
+        console.warn('Error al persistir auto-migración:', e);
+      }
+    }
+  }
 
   // 3. Suscribir renderizado reactivo a cambios en el curso
   courseManager.subscribe((mgr) => {

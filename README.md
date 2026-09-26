@@ -1,7 +1,7 @@
 # LICStreamEdu - Reproductor Inteligente de Cursos
 
 <p align="center">
-  <img src="assets/logo.png" alt="LICStreamEdu Logo" width="130"><br>
+  <img src="assets/logo-dark.png" alt="LICStreamEdu Logo" width="240"><br>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licencia MIT"></a>
   <img src="https://img.shields.io/badge/Vanilla_JS-ES6+-F7DF1E.svg?logo=javascript&logoColor=black" alt="Vanilla JS">
   <img src="https://img.shields.io/badge/HTML5-CSS3-E34F26.svg?logo=html5&logoColor=white" alt="HTML5 & CSS3">
@@ -9,7 +9,7 @@
 
 Una aplicación web moderna, minimalista y de alto rendimiento desarrollada exclusivamente con **HTML5, CSS3 y JavaScript moderno (ES6+ Vanilla)**, sin dependencias, librerías ni frameworks externos.
 
-Diseñada con enfoque **Mobile-First**, soporte de **6 paletas de colores intercambiables**, persistencia local completa (`localStorage` e `IndexedDB`), reproductor embebido de YouTube con soporte de fraccionamiento por minutos, libreta de apuntes en Markdown, recorrido guiado interactivo (*Spotlight Tour*), gestor de recursos y exportación/importación bidireccional en formato JSON.
+Diseñada con enfoque **Mobile-First**, soporte de **8 paletas de colores intercambiables**, persistencia local completa (`localStorage` e `IndexedDB`), reproductor embebido de YouTube con soporte de fraccionamiento por minutos, libreta de apuntes en Markdown, recorrido guiado interactivo (*Spotlight Tour*), gestor de recursos y exportación/importación bidireccional en formato JSON.
 
 ---
 
@@ -35,14 +35,16 @@ Diseñada con enfoque **Mobile-First**, soporte de **6 paletas de colores interc
 - **Anexar Archivos**: Botón para incorporar apuntes existentes desde archivos locales `.md` o `.txt`.
 - **Descarga Nativa con Ventana de Windows**: Integración con la API moderna `window.showSaveFilePicker` para guardar el archivo `.md` seleccionando nombre y carpeta de destino directamente en el sistema operativo.
 
-### 4. 6 Paletas de Colores Predefinidas
+### 4. 8 Paletas de Colores Predefinidas
 - **Obsidian Dark**: Fondo oscuro moderno con acento Índigo/Violeta.
 - **Cyber Emerald**: Oscuro profundo con acento Verde Esmeralda y Menta.
 - **Nordic Frost**: Azul marino ártico con acento Cian Glaciar.
 - **Sunset Amber**: Grafito cálido con acento Ámbar/Fuego.
 - **Clean Light**: Modo claro minimalista con alto contraste y acento Azul Zafiro.
 - **Rose Quartz**: Púrpura sofisticado con acento Rosa Eléctrico.
-- Selector interactivo con vista previa visual y persistencia en `localStorage`.
+- **Lemon Ice-Cream**: Modo claro cálido y cremoso con acento Amarillo Limón, Menta e índigo profundo.
+- **Iron-Man**: Modo oscuro tecnológico inspirado en la armadura Mark con Carmesí Stark, Oro y resplandor reactor Arc.
+- Selector interactivo con vista previa visual de swatches y persistencia en `localStorage`.
 
 ### 5. Carga y Gestión Flexible de Cursos (JSON)
 - Carga archivos `.json` locales mediante arrastrar y soltar (Drag & Drop) o explorador de archivos.
@@ -86,17 +88,27 @@ Diseñada con enfoque **Mobile-First**, soporte de **6 paletas de colores interc
 ```
 App Reproductor de Cursos/
 ├── index.html              # Estructura semántica, accesibilidad y modales
+├── manual.html             # Manual de Usuario oficial interactivo en HTML (Tema Lemon Ice-Cream)
 ├── styles.css              # Sistema de diseño, variables de temas y layout responsivo
-├── sample-course.json      # Curso demo con 3 módulos, 8 lecciones, notas y recursos
+├── sample-course.json      # Curso demo con 3 módulos, 9 lecciones, notas y recursos
 ├── README.md               # Documentación general del proyecto
 ├── LICENSE                 # Texto legal canónico de la Licencia MIT (Inglés)
 ├── LICENSE_ES              # Traducción de referencia de la Licencia MIT (Español)
 ├── assets/
-│   └── logo.png            # Logotipo oficial de LICStreamEdu con fondo transparente
+│   ├── logo-dark.png       # Logotipo completo oficial para temas oscuros (fondo transparente)
+│   ├── logo-light.png      # Logotipo completo oficial para temas claros (fondo transparente)
+│   ├── logo.png            # Logotipo principal de la aplicación
+│   ├── favicon.png         # Isotipo oficial en alta resolución (512x512)
+│   ├── favicon-32x32.png   # Favicon estándar para navegadores
+│   ├── favicon-16x16.png   # Favicon compacto para pestañas
+│   ├── isotipo.png         # Isotipo oficial independiente
+│   ├── apple-touch-icon.png# Ícono para dispositivos móviles y accesos directos
+│   ├── manual-screen-main.png # Captura de la interfaz principal para el manual
+│   └── manual-screen-notes.png# Captura de la libreta de notas para el manual
 └── js/
     ├── storage.js          # Capa de persistencia (LocalStorage e IndexedDBManager)
     ├── youtube.js          # Extractor de IDs, URLs con timestamp y miniaturas de YouTube
-    ├── themes.js           # Definición y alternancia de las 6 paletas de colores
+    ├── themes.js           # Definición y alternancia de las 8 paletas de colores
     ├── courses.js          # Gestor de cursos, playlists, lecciones, progreso y cierre
     ├── attachments.js      # Validación (10 MB), gestión de recursos locales y en la nube
     ├── notes.js            # Libreta de apuntes, Markdown en vivo y descarga nativa .md
@@ -149,7 +161,7 @@ La aplicación utiliza un formato JSON estructurado, legible y completo que cons
         {
           "id": "vid-101",
           "title": "1. Estructura y Semántica Moderna en HTML5",
-          "url": "https://www.youtube.com/watch?v=k783iVqA68A",
+          "url": "https://www.youtube.com/watch?v=UB1O30fR-EE",
           "description": "Organiza aplicaciones web con etiquetas semánticas y accesibilidad."
         },
         {

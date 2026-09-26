@@ -6,9 +6,11 @@
   <title>LICStreamEdu | Reproductor Inteligente de Cursos</title>
   <meta name="description" content="Reproductor minimalista y moderno para cursos de YouTube con seguimiento de progreso, listas de reproducción, temas personalizables y gestor de archivos.">
   
-  <!-- Favicon oficial -->
-  <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="apple-touch-icon" href="assets/logo.png">
+  <!-- Favicon oficial (Isotipo) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   
   <!-- Tipografías: Plus Jakarta Sans, Architects Daughter (manuscrita tipo Virgil/Excalidraw), Patrick Hand, Merriweather, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,9 +28,9 @@
     <div class="header-container">
       
       <!-- Logotipo e Identidad -->
-      <div class="brand">
-        <img src="assets/logo.png" alt="LICStreamEdu Logo" class="brand-logo-img">
-        <div class="brand-text">
+      <div class="brand" title="LICStreamEdu">
+        <img src="assets/logo-dark.png" alt="LICStreamEdu Logo" class="brand-logo-img" id="brandLogoImg">
+        <div class="brand-text sr-only">
           <span class="brand-title">LICStreamEdu</span>
         </div>
       </div>
@@ -93,6 +95,14 @@
           </svg>
         </button>
 
+        <!-- Botón Manual de Usuario -->
+        <a href="manual.html" target="_blank" rel="noopener noreferrer" class="btn btn-icon btn-sm" id="btnOpenManual" title="Manual de Usuario" aria-label="Manual de Usuario">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </a>
+
         <!-- Botón Selector de Temas -->
         <button type="button" class="btn btn-icon btn-sm" id="btnOpenThemeModal" title="Cambiar tema de color" aria-label="Cambiar tema de color">
           <span class="theme-current-dot" id="currentThemeDot"></span>
@@ -151,7 +161,7 @@
         <!-- El iframe se inyecta dinámicamente mediante JavaScript -->
         <div class="empty-player-state" id="emptyPlayerState">
           <div class="empty-icon" aria-hidden="true">
-            <img src="assets/logo.png" alt="LICStreamEdu" class="empty-logo-img">
+            <img src="assets/logo-dark.png" alt="LICStreamEdu" class="empty-logo-img" id="emptyLogoImg">
           </div>
           <h3>Ningún video en reproducción</h3>
           <p>Carga un archivo JSON de curso o agrega un nuevo video para comenzar.</p>
@@ -1065,7 +1075,7 @@
   <div class="modal-backdrop" id="modalWelcomeOnboarding" aria-hidden="true" role="dialog" aria-labelledby="modalWelcomeTitle">
     <div class="modal-card modal-welcome">
       <div class="welcome-header">
-        <img src="assets/logo.png" alt="LICStreamEdu" class="welcome-logo-img">
+        <img src="assets/logo-dark.png" alt="LICStreamEdu" class="welcome-logo-img" id="welcomeLogoImg">
         <h2 class="welcome-title" id="modalWelcomeTitle">¡Te damos la bienvenida a LICStreamEdu!</h2>
         <p class="welcome-subtitle">
           Tu reproductor inteligente para estudiar cursos de YouTube con seguimiento de progreso, control por minutos y libreta de notas en Markdown.

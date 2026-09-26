@@ -212,6 +212,66 @@
   --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.75);
 }
 
+/* TEMA 7: Lemon Ice-Cream (Tema Claro Cremoso y Refrescante) */
+[data-theme="lemon"] {
+  --bg-app: #faf7ee;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f4efdf;
+  --bg-input: #fdfbf5;
+  --bg-hover: #ede4ce;
+  --border-subtle: #e4d8ba;
+  --border-focus: #f5b700;
+
+  --text-main: #112443;
+  --text-muted: #3b4e6a;
+  --text-dimmed: #687994;
+
+  --primary: #c98900;
+  --primary-hover: #ad7500;
+  --primary-subtle: rgba(254, 224, 53, 0.25);
+  --primary-glow: rgba(245, 183, 0, 0.35);
+
+  --success: #5f8d12;
+  --success-subtle: rgba(180, 218, 61, 0.22);
+  --danger: #dc2626;
+  --danger-subtle: rgba(220, 38, 38, 0.12);
+  --warning: #d97706;
+
+  --shadow-sm: 0 1px 3px rgba(17, 36, 67, 0.06);
+  --shadow-md: 0 4px 14px rgba(17, 36, 67, 0.08);
+  --shadow-lg: 0 12px 30px rgba(17, 36, 67, 0.12);
+}
+
+/* TEMA 8: Iron-Man (Tema Oscuro Tecnológico y Cinematográfico) */
+[data-theme="ironman"] {
+  --bg-app: #120809;
+  --bg-surface: #1c0d10;
+  --bg-surface-elevated: #281216;
+  --bg-input: #15090b;
+  --bg-hover: #3a181e;
+  --border-subtle: #451b22;
+  --border-focus: #5ad1f6;
+
+  --text-main: #fff5f5;
+  --text-muted: #e6a8a8;
+  --text-dimmed: #a86b6b;
+
+  --primary: #d32f2f;
+  --primary-hover: #b71c1c;
+  --primary-subtle: rgba(211, 47, 47, 0.2);
+  --primary-glow: rgba(229, 57, 53, 0.45);
+
+  --success: #10b981;
+  --success-subtle: rgba(16, 185, 129, 0.16);
+  --danger: #ef4444;
+  --danger-subtle: rgba(239, 68, 68, 0.18);
+  --warning: #e9bf1f;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.85);
+}
+
 /* --------------------------------------------------------------------------
    2. REINICIO GENERAL Y BASE
    -------------------------------------------------------------------------- */
@@ -311,6 +371,28 @@ button {
   box-shadow: 0 4px 14px var(--primary-glow);
 }
 
+[data-theme="lemon"] .btn-primary {
+  background: #fee035;
+  color: #112443;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(245, 183, 0, 0.35);
+}
+[data-theme="lemon"] .btn-primary:hover:not(:disabled) {
+  background: #edd025;
+  color: #112443;
+  box-shadow: 0 4px 14px rgba(245, 183, 0, 0.5);
+}
+
+[data-theme="ironman"] .btn-primary {
+  background: #d32f2f;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(211, 47, 47, 0.45);
+}
+[data-theme="ironman"] .btn-primary:hover:not(:disabled) {
+  background: #b71c1c;
+  box-shadow: 0 4px 16px rgba(211, 47, 47, 0.6);
+}
+
 .btn-secondary {
   background: var(--bg-surface-elevated);
   color: var(--text-main);
@@ -360,6 +442,12 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-icon:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--primary);
 }
 
 .btn-block {
@@ -413,25 +501,75 @@ button {
 }
 
 .brand-logo-img {
-  width: 36px;
-  height: 36px;
+  height: 38px;
+  width: auto;
+  max-width: 140px;
   object-fit: contain;
-  border-radius: var(--radius-xs);
-  filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.45)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4));
   transition: transform var(--transition-fast), filter var(--transition-fast);
 }
 
 .brand:hover .brand-logo-img {
-  transform: scale(1.08);
-  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.75)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  transform: scale(1.04);
+  filter: drop-shadow(0 2px 10px var(--primary-glow));
 }
 
+[data-theme="light"] .brand-logo-img,
 [data-theme="clean"] .brand-logo-img {
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
 }
 
+[data-theme="light"] .brand:hover .brand-logo-img,
 [data-theme="clean"] .brand:hover .brand-logo-img {
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.25));
+}
+
+[data-theme="lemon"] .brand-logo-img {
+  filter: drop-shadow(0 1px 2px rgba(17, 36, 67, 0.12));
+}
+
+[data-theme="lemon"] .brand:hover .brand-logo-img {
+  filter: drop-shadow(0 2px 10px rgba(245, 183, 0, 0.45));
+}
+
+[data-theme="ironman"] .brand-logo-img {
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
+}
+
+[data-theme="ironman"] .brand:hover .brand-logo-img {
+  filter: drop-shadow(0 2px 12px rgba(229, 57, 53, 0.65));
+}
+
+/* Adaptación dinámica del logotipo según el tema activo */
+.brand-logo-img,
+.empty-logo-img,
+.welcome-logo-img {
+  content: url('assets/logo-dark.png');
+}
+
+[data-theme="light"] .brand-logo-img,
+[data-theme="light"] .empty-logo-img,
+[data-theme="light"] .welcome-logo-img,
+[data-theme="clean"] .brand-logo-img,
+[data-theme="clean"] .empty-logo-img,
+[data-theme="clean"] .welcome-logo-img,
+[data-theme="lemon"] .brand-logo-img,
+[data-theme="lemon"] .empty-logo-img,
+[data-theme="lemon"] .welcome-logo-img {
+  content: url('assets/logo-light.png');
+}
+
+/* Utilidad accesible para ocultar visualmente manteniendo compatibilidad de lectores de pantalla */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 .brand-text {
@@ -629,14 +767,22 @@ button {
 }
 
 .empty-logo-img {
-  width: 56px;
+  width: auto;
   height: 56px;
+  max-width: 180px;
   object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 10px var(--primary-glow));
+  transition: transform var(--transition-base), filter var(--transition-base);
 }
 
-[data-theme="clean"] .empty-logo-img {
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+[data-theme="light"] .empty-logo-img,
+[data-theme="clean"] .empty-logo-img,
+[data-theme="lemon"] .empty-logo-img {
+  filter: drop-shadow(0 2px 6px rgba(17, 36, 67, 0.12));
+}
+
+[data-theme="ironman"] .empty-logo-img {
+  filter: drop-shadow(0 2px 12px rgba(229, 57, 53, 0.5));
 }
 
 .empty-player-state h3 {
@@ -2443,16 +2589,23 @@ button {
 }
 
 .welcome-logo-img {
-  height: 64px;
+  height: 72px;
   width: auto;
+  max-width: 230px;
   object-fit: contain;
-  margin-bottom: 14px;
-  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.45));
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 16px var(--primary-glow));
   transition: transform var(--transition-normal);
 }
 
-[data-theme="clean"] .welcome-logo-img {
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+[data-theme="light"] .welcome-logo-img,
+[data-theme="clean"] .welcome-logo-img,
+[data-theme="lemon"] .welcome-logo-img {
+  filter: drop-shadow(0 3px 8px rgba(17, 36, 67, 0.12));
+}
+
+[data-theme="ironman"] .welcome-logo-img {
+  filter: drop-shadow(0 4px 18px rgba(229, 57, 53, 0.5));
 }
 
 .welcome-logo-img:hover {

@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Manual de Usuario Oficial y Completo de LICStreamEdu - Reproductor Inteligente de Cursos">
+  <title>Manual de Usuario | LICStreamEdu</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+
+  <!-- Google Fonts: Plus Jakarta Sans y JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       VARIABLES DE COLOR - PALETA LEMON ICE-CREAM & SISTEMA DE DISEÑO
+       ========================================================================== */
+    :root {
+      --bg-app: #faf7ee;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #f4efdf;
+      --bg-input: #fdfbf5;
+      --bg-hover: #ede4ce;
+      --border-subtle: #e4d8ba;
+      --border-strong: #d5c59e;
+      --border-focus: #f5b700;
+
+      --text-main: #112443;
+      --text-muted: #3b4e6a;
+      --text-dimmed: #687994;
+
+      --primary: #fee035;
+      --primary-dark: #c98900;
+      --primary-hover: #f5b700;
+      --primary-subtle: rgba(254, 224, 53, 0.28);
+      --primary-glow: rgba(245, 183, 0, 0.35);
+
+      --success: #5f8d12;
+      --success-subtle: rgba(180, 218, 61, 0.22);
+      --danger: #dc2626;
+      --danger-subtle: rgba(220, 38, 38, 0.12);
+      --warning: #d97706;
+      --warning-subtle: rgba(217, 119, 6, 0.14);
+      --info: #0284c7;
+      --info-subtle: rgba(2, 132, 199, 0.14);
+
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+      --font-serif: 'Merriweather', serif;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(17, 36, 67, 0.05);
+      --shadow-md: 0 4px 14px rgba(17, 36, 67, 0.07);
+      --shadow-lg: 0 12px 30px rgba(17, 36, 67, 0.1);
+
+      --transition-fast: 0.18s ease;
+      --transition-normal: 0.28s ease;
+      --sidebar-width: 290px;
+      --header-height: 68px;
+    }
+
+    /* Reset y Base */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-family: var(--font-main);
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text-main);
+      background-color: var(--bg-app);
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+    }
+
+    a {
+      color: var(--text-main);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    a:hover {
+      color: var(--primary-dark);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-subtle);
+      border-radius: var(--radius-full);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-strong);
+    }
+
+    /* ==========================================================================
+       HEADER PRINCIPAL
+       ========================================================================== */
+    .manual-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--header-height);
+      background: rgba(250, 247, 238, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .header-brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-logo {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      background: var(--primary);
+      color: #112443;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 260px;
+    }
+
+    .search-input-wrap svg {
+      position: absolute;
+      left: 10px;
+      color: var(--text-dimmed);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px 0 34px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      color: var(--text-main);
+      font-family: inherit;
+      transition: all var(--transition-fast);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-dark);
+      box-shadow: 0 0 0 3px var(--primary-subtle);
+      background: #ffffff;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #112443;
+      font-weight: 700;
+      box-shadow: 0 2px 8px var(--primary-subtle);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--primary-glow);
+      color: #112443;
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-strong);
+    }
+
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: var(--radius-sm);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+    }
+
+    /* ==========================================================================
+       ESTRUCTURA DEL CONTENEDOR PRINCIPAL
+       ========================================================================== */
+    .manual-layout {
+      display: flex;
+      flex: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Barra Lateral de Navegación */
+    .manual-sidebar {
+      width: var(--sidebar-width);
+      position: sticky;
+      top: var(--header-height);
+      height: calc(100vh - var(--header-height));
+      overflow-y: auto;
+      padding: 24px 16px;
+      border-right: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      background: var(--bg-app);
+    }
+
+    .sidebar-heading {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-dimmed);
+      font-weight: 800;
+      margin-bottom: 12px;
+      padding-left: 12px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all var(--transition-fast);
+    }
+
+    .nav-item a:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
+    }
+
+    .nav-item.active a {
+      background: #ffffff;
+      color: #112443;
+      font-weight: 700;
+      border-left: 3px solid var(--primary-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: var(--text-dimmed);
+      transition: color var(--transition-fast);
+    }
+
+    .nav-item.active svg,
+    .nav-item a:hover svg {
+      color: var(--primary-dark);
+    }
+
+    /* Contenido Principal */
+    .manual-content {
+      flex: 1;
+      padding: 40px 48px 80px 48px;
+      max-width: 980px;
+      min-width: 0;
+    }
+
+    /* ==========================================================================
+       HERO & SECCIONES
+       ========================================================================== */
+    .manual-hero {
+      background: linear-gradient(135deg, #ffffff 0%, var(--bg-surface-elevated) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 38px 40px;
+      margin-bottom: 48px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .manual-hero::after {
+      content: '';
+      position: absolute;
+      right: -40px;
+      bottom: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: var(--primary-subtle);
+      filter: blur(40px);
+      pointer-events: none;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .meta-tag.highlight {
+      background: var(--primary);
+      border-color: var(--primary-dark);
+      color: #112443;
+    }
+
+    .manual-title {
+      font-size: 2.3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #112443;
+      margin-bottom: 14px;
+      letter-spacing: -0.03em;
+    }
+
+    .manual-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    .hero-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      flex-shrink: 0;
+    }
+
+    .stat-info h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #112443;
+    }
+
+    .stat-info p {
+      font-size: 0.75rem;
+      color: var(--text-dimmed);
+    }
+
+    /* Tipografía y Secciones */
+    .manual-section {
+      margin-bottom: 60px;
+      scroll-margin-top: calc(var(--header-height) + 24px);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-subtle);
+    }
+
+    .section-icon-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: var(--primary);
+      color: #112443;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #112443;
+      letter-spacing: -0.02em;
+    }
+
+    .subsection-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #112443;
+      margin: 28px 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Listas con estilo */
+    .feature-list {
+      list-style: none;
+      margin: 16px 0 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    .feature-list li svg {
+      width: 18px;
+      height: 18px;
+      color: var(--success);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .feature-list strong {
+      color: #112443;
+    }
+
+    /* ==========================================================================
+       CAJAS DE NOTAS / CALLOUTS
+       ========================================================================== */
+    .callout {
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin: 20px 0;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+    }
+
+    .callout-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .callout-content h5 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .callout-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout-tip {
+      background: #fcfdf7;
+      border-color: rgba(180, 218, 61, 0.4);
+      color: #2b4505;
+    }
+
+    .callout-tip .callout-icon {
+      color: var(--success);
+    }
+
+    .callout-tip h5 {
+      color: #2b4505;
+    }
+
+    .callout-info {
+      background: #f7fbfe;
+      border-color: rgba(2, 132, 199, 0.3);
+      color: #074e74;
+    }
+
+    .callout-info .callout-icon {
+      color: var(--info);
+    }
+
+    .callout-info h5 {
+      color: #074e74;
+    }
+
+    .callout-warning {
+      background: #fffdf5;
+      border-color: rgba(217, 119, 6, 0.3);
+      color: #78350f;
+    }
+
+    .callout-warning .callout-icon {
+      color: var(--warning);
+    }
+
+    .callout-warning h5 {
+      color: #78350f;
+    }
+
+    /* ==========================================================================
+       FIGURAS Y CAPTURAS DE PANTALLA
+       ========================================================================== */
+    .figure-container {
+      margin: 28px 0;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .browser-mockup-header {
+      background: var(--bg-surface-elevated);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mockup-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red {
+      background: #f87171;
+    }
+
+    .dot-yellow {
+      background: #fbbf24;
+    }
+
+    .dot-green {
+      background: #34d399;
+    }
+
+    .mockup-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-left: auto;
+      margin-right: auto;
+      font-family: var(--font-code);
+    }
+
+    .figure-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    .figure-caption {
+      padding: 14px 20px;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .figure-caption svg {
+      color: var(--primary-dark);
+      flex-shrink: 0;
+    }
+
+    /* Hotspot Cards */
+    .hotspots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .hotspot-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hotspot-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #112443;
+      font-size: 0.8rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .hotspot-body h6 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #112443;
+      margin-bottom: 3px;
+    }
+
+    .hotspot-body p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0;
+      line-height: 1.45;
+    }
+
+    /* ==========================================================================
+       TABLAS PROFESIONALES
+       ========================================================================== */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin: 22px 0 28px 0;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    .custom-table th {
+      background: var(--bg-surface-elevated);
+      color: #112443;
+      font-weight: 700;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      white-space: nowrap;
+    }
+
+    .custom-table td {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .custom-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .custom-table tr:hover td {
+      background: var(--bg-hover);
+      color: #112443;
+    }
+
+    .kbd {
+      display: inline-block;
+      padding: 3px 7px;
+      font-family: var(--font-code);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #112443;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+      white-space: nowrap;
+    }
+
+    /* Bloques de Código */
+    .code-block-wrap {
+      background: #112443;
+      color: #f8fafc;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin: 20px 0;
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      box-shadow: var(--shadow-md);
+      border: 1px solid #1e3a6a;
+    }
+
+    .code-block-wrap pre {
+      margin: 0;
+    }
+
+    .code-comment {
+      color: #88a4ce;
+    }
+
+    .code-key {
+      color: #ffd644;
+    }
+
+    .code-str {
+      color: #86efac;
+    }
+
+    .code-num {
+      color: #f472b6;
+    }
+
+    .code-bool {
+      color: #38bdf8;
+    }
+
+    /* Muestras de Temas (Swatches) */
+    .themes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .theme-preview-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .theme-preview-card.active-lemon {
+      border: 2px solid var(--primary-dark);
+      background: #fffdf5;
+    }
+
+    .theme-swatch-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .theme-swatch-inner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .theme-card-info h6 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #112443;
+    }
+
+    .theme-card-info span {
+      font-size: 0.74rem;
+      color: var(--text-dimmed);
+    }
+
+    /* FAQ Accordion */
+    .faq-item {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: all var(--transition-fast);
+    }
+
+    .faq-question {
+      padding: 16px 20px;
+      font-weight: 700;
+      color: #112443;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .faq-question:hover {
+      background: var(--bg-hover);
+    }
+
+    .faq-icon {
+      transition: transform var(--transition-fast);
+      color: var(--primary-dark);
+    }
+
+    .faq-answer {
+      padding: 0 20px 16px 20px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      border-top: 1px dashed var(--border-subtle);
+      padding-top: 12px;
+    }
+
+    /* Footer */
+    .manual-footer {
+      border-top: 1px solid var(--border-subtle);
+      background: #ffffff;
+      padding: 30px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    /* ==========================================================================
+       RESPONSIVE & PRINT MEDIA
+       ========================================================================== */
+    @media (max-width: 992px) {
+      .manual-sidebar {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: var(--header-height);
+        bottom: 0;
+        width: 280px;
+        z-index: 99;
+        background: #faf7ee;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .manual-sidebar.open {
+        display: block;
+      }
+
+      .mobile-menu-btn {
+        display: inline-flex;
+      }
+
+      .manual-content {
+        padding: 30px 24px;
+      }
+
+      .search-input-wrap {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .manual-header {
+        padding: 0 16px;
+      }
+
+      .manual-title {
+        font-size: 1.8rem;
+      }
+
+      .manual-hero {
+        padding: 24px 20px;
+      }
+
+      .btn .btn-text {
+        display: none;
+      }
+    }
+
+    @media print {
+
+      .manual-header,
+      .manual-sidebar,
+      .footer-links,
+      .btn {
+        display: none !important;
+      }
+
+      .manual-content {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      body,
+      html {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+
+      .manual-hero {
+        border: 1px solid #ccc;
+        box-shadow: none;
+      }
+
+      .callout,
+      .table-container,
+      .figure-container {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==========================================================================
+       CABECERA PRINCIPAL
+       ========================================================================== -->
+  <header class="manual-header">
+    <div class="header-brand-wrap">
+      <button class="btn btn-secondary btn-icon mobile-menu-btn" id="btnToggleSidebar" aria-label="Abrir Menú">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <a href="index.html" title="Regresar a LICStreamEdu">
+        <img src="assets/logo-light.png" alt="LICStreamEdu Logo" class="header-logo">
+      </a>
+      <span class="header-badge">Manual Oficial</span>
+    </div>
+
+    <div class="header-actions">
+      <!-- Buscador en tiempo real del manual -->
+      <div class="search-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="manualSearchInput" class="search-input" placeholder="Buscar en el manual...">
+      </div>
+
+      <!-- Botón Imprimir / Guardar en PDF -->
+      <button class="btn btn-secondary" onclick="window.print()" title="Imprimir o exportar como documento PDF">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        <span class="btn-text">Imprimir / PDF</span>
+      </button>
+
+      <!-- Botón Ir a la Aplicación -->
+      <a href="index.html" class="btn btn-primary" title="Abrir reproductor LICStreamEdu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span class="btn-text">Abrir App</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       DISPOSICIÓN PRINCIPAL: SIDEBAR + CONTENIDO
+       ========================================================================== -->
+  <div class="manual-layout">
+
+    <!-- Barra Lateral de Navegación Fija -->
+    <nav class="manual-sidebar" id="manualSidebar">
+      <div class="sidebar-heading">Índice del Manual</div>
+      <ul class="nav-list">
+        <li class="nav-item active">
+          <a href="#intro">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            1. Introducción y Filosofía
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#onboarding">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+              <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+            2. Bienvenida y Spotlight Tour
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#topbar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+            </svg>
+            3. Barra Superior (Topbar)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#player">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            4. Reproductor y Controles
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#sidebar-guide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="15" y1="3" x2="15" y2="21"></line>
+            </svg>
+            5. Módulos y Lista de Videos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#notes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            6. Libreta de Apuntes (Markdown)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#courses">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            7. Gestión de Cursos (JSON)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#resources">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48">
+              </path>
+            </svg>
+            8. Gestor de Recursos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#themes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 10 10 0 0 0 0-20"></path>
+            </svg>
+            9. Los 8 Temas de Color
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#shortcuts">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="M6 8h.001"></path>
+              <path d="M10 8h.001"></path>
+              <path d="M14 8h.001"></path>
+              <path d="M18 8h.001"></path>
+              <path d="M8 12h8"></path>
+            </svg>
+            10. Atajos y Preguntas Frecuentes
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Área de Contenido Principal -->
+    <main class="manual-content">
+
+      <!-- ==========================================================================
+           HERO SECTION
+           ========================================================================== -->
+      <section class="manual-hero">
+        <div class="hero-meta">
+          <span class="meta-tag highlight">Versión 1.0 Oficial</span>
+          <span class="meta-tag">Vanilla JS ES6+</span>
+          <span class="meta-tag">Tema: Lemon Ice-Cream</span>
+          <span class="meta-tag">100% Client-Side</span>
+        </div>
+        <h1 class="manual-title">Manual de Usuario de LICStreamEdu</h1>
+        <p class="manual-subtitle">
+          Guía exhaustiva, paso a paso y orientada a la productividad. Aprende a dominar todas las herramientas, atajos,
+          formatos de importación y personalizaciones de la plataforma de aprendizaje autodidacta más rápida y privada.
+        </p>
+
+        <div class="hero-stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <h4>0% Servidores</h4>
+              <p>100% de datos en tu navegador</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 10 10 0 0 0 0-20"></path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <h4>8 Paletas</h4>
+              <p>Alto contraste WCAG AAA</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <h4>Libreta .md</h4>
+              <p>Auto-guardado & Descarga nativa</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <h4>JSON Nativo</h4>
+              <p>Exporta & Comparte tus cursos</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           1. INTRODUCCIÓN Y FILOSOFÍA
+           ========================================================================== -->
+      <section id="intro" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">1</div>
+          <h2 class="section-title">Introducción y Filosofía</h2>
+        </div>
+
+        <p>
+          <strong>LICStreamEdu</strong> es un entorno de reproducción inteligente y toma de notas diseñado para
+          estructurar cursos educativos a partir de videos de YouTube, playlists y recursos digitales, sin distracciones
+          de algoritmos ni publicidad lateral.
+        </p>
+
+        <div class="callout callout-info">
+          <div class="callout-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <div class="callout-content">
+            <h5>Arquitectura Local (Zero-Server Privacy)</h5>
+            <p>
+              A diferencia de las plataformas tradicionales que requieren inicio de sesión y rastrean tu actividad en
+              bases de datos remotas, <strong>LICStreamEdu opera 100% en el lado del cliente (tu navegador)</strong>.
+              Tus cursos, apuntes, tiempos y progreso residen exclusivamente en el almacenamiento seguro de tu
+              computadora (`localStorage` e `IndexedDB`).
+            </p>
+          </div>
+        </div>
+
+        <h3 class="subsection-title">Requisitos del Sistema y Compatibilidad</h3>
+        <p>
+          La aplicación no requiere instalación de software auxiliar ni configuración de servidores locales. Funciona
+          directamente abriendo el archivo <code>index.html</code> en cualquier navegador web moderno:
+        </p>
+        <ul class="feature-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Google Chrome / Brave / Edge:</strong> Soporte total, incluyendo la moderna API nativa
+              <code>window.showSaveFilePicker</code> para descargas directas de notas.
+            </div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Mozilla Firefox / Apple Safari:</strong> Soporte completo con fallback transparente de descarga
+              automática mediante blobs.</div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Dispositivos Móviles y Tablets:</strong> Interfaz con diseño fluido adaptativo (Mobile-First) y
+              cajón desplegable lateral.</div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ==========================================================================
+           2. BIENVENIDA Y SPOTLIGHT TOUR
+           ========================================================================== -->
+      <section id="onboarding" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">2</div>
+          <h2 class="section-title">Experiencia de Bienvenida y Spotlight Tour</h2>
+        </div>
+
+        <p>
+          La primera vez que inicias LICStreamEdu, la aplicación presenta un modal interactivo de bienvenida que te
+          permite elegir entre dos caminos de aprendizaje:
+        </p>
+
+        <div class="hotspots-grid">
+          <div class="hotspot-card">
+            <div class="hotspot-num">A</div>
+            <div class="hotspot-body">
+              <h6>Explorar Curso Demo</h6>
+              <p>Carga instantáneamente la «Masterclass de Desarrollo Web Frontend» con 9 lecciones organizadas y activa
+                el <strong>Spotlight Tour guiado</strong>.</p>
+            </div>
+          </div>
+          <div class="hotspot-card">
+            <div class="hotspot-num">B</div>
+            <div class="hotspot-body">
+              <h6>Comenzar desde Cero</h6>
+              <p>Abre el lienzo en blanco para que puedas cargar tus propios archivos JSON o registrar videos
+                manualmente con el botón «+ Nuevo Video».</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="subsection-title">El Recorrido Guiado Interactivo (Spotlight Tour)</h3>
+        <p>
+          El tour oscurece la pantalla suavemente y proyecta un foco iluminado sobre los cinco elementos neurálgicos de
+          la aplicación:
+        </p>
+
+        <div class="table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Paso</th>
+                <th>Elemento Resaltado</th>
+                <th>Explicación y Función</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1</strong></td>
+                <td>Widget de Progreso y Temas</td>
+                <td>Muestra el porcentaje completado en tiempo real y el botón de paletas de color.</td>
+              </tr>
+              <tr>
+                <td><strong>2</strong></td>
+                <td>Reproductor 16:9</td>
+                <td>El visor principal de YouTube con controles de lección anterior/siguiente.</td>
+              </tr>
+              <tr>
+                <td><strong>3</strong></td>
+                <td>Módulos y Lecciones</td>
+                <td>Estructura jerárquica con acordeones, miniaturas y casillas de verificación.</td>
+              </tr>
+              <tr>
+                <td><strong>4</strong></td>
+                <td>Búsqueda y Filtros Rápidos</td>
+                <td>Filtra al instante entre lecciones pendientes y completadas.</td>
+              </tr>
+              <tr>
+                <td><strong>5</strong></td>
+                <td>Libreta de Apuntes</td>
+                <td>Cajón lateral con editor de Markdown en tiempo real y tipografías intercambiables.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-tip">
+          <div class="callout-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            </svg>
+          </div>
+          <div class="callout-content">
+            <h5>¿Cómo reiniciar el Tour en cualquier momento?</h5>
+            <p>
+              Puedes reactivar el recorrido guiado cuando lo desees haciendo clic en el <strong>botón con ícono de
+                brújula</strong> ubicado en la barra superior, o usando el atajo de teclado correspondiente.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           3. ANATOMÍA DE LA BARRA SUPERIOR (TOPBAR)
+           ========================================================================== -->
+      <section id="topbar" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">3</div>
+          <h2 class="section-title">Anatomía de la Barra Superior (Topbar)</h2>
+        </div>
+
+        <p>
+          La barra superior es el centro neurálgico de control. A continuación se presenta la captura de la aplicación
+          en el tema <strong>Lemon Ice-Cream</strong> con los puntos funcionales clave:
+        </p>
+
+        <!-- Figura 1: Vista General de la Aplicación -->
+        <div class="figure-container">
+          <div class="browser-mockup-header">
+            <div class="mockup-dots">
+              <span class="mockup-dot dot-red"></span>
+              <span class="mockup-dot dot-yellow"></span>
+              <span class="mockup-dot dot-green"></span>
+            </div>
+            <div class="mockup-title">LICStreamEdu - Vista Principal (Tema: Lemon Ice-Cream)</div>
+          </div>
+          <img src="assets/manual-screen-main.png"
+            alt="Captura de la vista principal de LICStreamEdu con el tema Lemon Ice-Cream" class="figure-img">
+          <div class="figure-caption">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span><strong>Figura 1:</strong> Interfaz general con reproductor de video 16:9, barra de progreso global,
+              botones de gestión y acordeón lateral.</span>
+          </div>
+        </div>
+
+        <div class="hotspots-grid">
+          <div class="hotspot-card">
+            <div class="hotspot-num">1</div>
+            <div class="hotspot-body">
+              <h6>Logotipo Inteligente</h6>
+              <p>Alterna automáticamente entre <code>logo-light.png</code> y <code>logo-dark.png</code> para asegurar
+                contraste óptimo según el tema.</p>
+            </div>
+          </div>
+          <div class="hotspot-card">
+            <div class="hotspot-num">2</div>
+            <div class="hotspot-body">
+              <h6>Barra de Progreso</h6>
+              <p>Muestra exactamente cuántas lecciones has completado (ej. <em>0 de 9 completados - 0%</em>) con relleno
+                visual dinámico.</p>
+            </div>
+          </div>
+          <div class="hotspot-card">
+            <div class="hotspot-num">3</div>
+            <div class="hotspot-body">
+              <h6>Cargar JSON</h6>
+              <p>Abre el modal para importar cursos mediante archivo local (.json), arrastrar y soltar, o URL remota con
+                CORS.</p>
+            </div>
+          </div>
+          <div class="hotspot-card">
+            <div class="hotspot-num">4</div>
+            <div class="hotspot-body">
+              <h6>Exportar JSON</h6>
+              <p>Descarga un archivo con toda la estructura, lecciones añadidas, títulos editados y tu progreso actual
+                guardado.</p>
+            </div>
+          </div>
+          <div class="hotspot-card">
+            <div class="hotspot-num">5</div>
+            <div class="hotspot-body">
+              <h6>+ Nuevo Video</h6>
+              <p>Permite registrar un video manual indicando módulo de destino, título, URL de YouTube y tiempos de
+                recorte.</p>
+            </div>
+          </div>
+          <div class="hotspot-card">
+            <div class="hotspot-num">6</div>
+            <div class="hotspot-body">
+              <h6>Recursos (Badge)</h6>
+              <p>Muestra el total de enlaces, documentación y archivos adjuntos del curso activo con un contador
+                dinámico amarillo.</p>
+            </div>
+          </div>
+          <div class="hotspot-card">
+            <div class="hotspot-num">7</div>
+            <div class="hotspot-body">
+              <h6>Brújula (Tour)</h6>
+              <p>Botón de reinicio instantáneo del recorrido interactivo paso a paso para refrescar la memoria sobre las
+                herramientas.</p>
+            </div>
+          </div>
+          <div class="hotspot-card">
+            <div class="hotspot-num">8</div>
+            <div class="hotspot-body">
+              <h6>Selector de Temas</h6>
+              <p>Abre el menú con las 8 paletas de color con punto indicador en vivo del tono acento activo.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           4. REPRODUCTOR Y CONTROLES DE LECCIÓN
+           ========================================================================== -->
+      <section id="player" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">4</div>
+          <h2 class="section-title">Reproductor y Controles de Lección</h2>
+        </div>
+
+        <p>
+          El reproductor de LICStreamEdu está optimizado para YouTube con estrictas directivas de privacidad, relación
+          de aspecto 16:9 y soporte de fragmentación por minutos:
+        </p>
+
+        <h3 class="subsection-title">Formatos de Enlace de YouTube Soportados</h3>
+        <p>Puedes ingresar casi cualquier variante de URL de YouTube en la aplicación:</p>
+        <ul class="feature-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>URLs estándar de navegador:</strong> <code>https://www.youtube.com/watch?v=VIDEO_ID</code>
+            </div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>URLs acortadas de compartir:</strong> <code>https://youtu.be/VIDEO_ID</code></div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>URLs con timestamps de inicio y fin:</strong>
+              <code>https://www.youtube.com/watch?v=VIDEO_ID&t=120s</code> o parámetros JSON
+              <code>start: 60, end: 300</code> para reproducir solo el fragmento educativo deseado.
+            </div>
+          </li>
+        </ul>
+
+        <h3 class="subsection-title">Barra de Acciones Inferior</h3>
+        <p>Justo debajo del reproductor se ubica la barra de navegación inmediata de la lección:</p>
+        <div class="table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Elemento</th>
+                <th>Acción / Comportamiento</th>
+                <th>Efecto Inmediato</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Casilla «Marcar como completado»</strong></td>
+                <td>Al hacer clic se marca la lección con un check SVG animado.</td>
+                <td>Aumenta la barra de progreso general y cambia el estado en la lista lateral.</td>
+              </tr>
+              <tr>
+                <td><strong>Botón Anterior (⏮)</strong></td>
+                <td>Salta a la lección previa del mismo módulo o del módulo anterior.</td>
+                <td>Carga el video inmediatamente sin recargar la página.</td>
+              </tr>
+              <tr>
+                <td><strong>Botón Siguiente (⏭)</strong></td>
+                <td>Avanza a la lección siguiente en el orden del curso.</td>
+                <td>Si la lección previa no estaba marcada, te permite continuar fluidamente.</td>
+              </tr>
+              <tr>
+                <td><strong>Botón Enlace Externo (↗)</strong></td>
+                <td>Abre el video en una nueva pestaña de YouTube.</td>
+                <td>Útil si deseas leer comentarios o acceder a subtítulos automáticos en otros idiomas.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           5. MÓDULOS Y LISTA DE VIDEOS
+           ========================================================================== -->
+      <section id="sidebar-guide" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">5</div>
+          <h2 class="section-title">Módulos y Lista Lateral de Videos</h2>
+        </div>
+
+        <p>
+          La barra lateral organiza todo el material pedagógico. Está diseñada para navegar rápidamente mediante teclado
+          o ratón:
+        </p>
+
+        <h3 class="subsection-title">Herramientas de Organización</h3>
+        <ul class="feature-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Edición Inline de Títulos:</strong> Haz clic en el botón lápiz (✏️) al lado del título del
+              curso o de cualquier módulo para renombrarlo instantáneamente sin salir de la vista.</div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Buscador Reactivo:</strong> Escribe en el campo «Buscar lección o tema...» para filtrar en
+              tiempo real las clases por palabras clave en sus títulos.</div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Pestañas de Filtrado por Estado:</strong>
+              <br>• <strong>Todos (N):</strong> Visualiza la totalidad del curso.
+              <br>• <strong>Pendientes (N):</strong> Oculta las lecciones ya vistas para enfocarte en lo que te falta.
+              <br>• <strong>Listos (N):</strong> Lista únicamente el contenido que ya dominaste.
+            </div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Módulos Acordeón:</strong> Haz clic en la cabecera de un módulo para colapsarlo o expandirlo,
+              manteniendo despejada tu área de trabajo.</div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Pestaña Flotante «LIBRETA»:</strong> Pestaña vertical dorada ubicada en el borde derecho del
+              panel para abrir el cuaderno con un solo clic.</div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ==========================================================================
+           6. LIBRETA DE APUNTES (MARKDOWN)
+           ========================================================================== -->
+      <section id="notes" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">6</div>
+          <h2 class="section-title">Libreta de Apuntes en Tiempo Real (Markdown)</h2>
+        </div>
+
+        <p>
+          La <strong>Libreta de Apuntes</strong> es un cajón lateral deslizante que te permite tomar notas estructuradas
+          mientras miras la clase sin perder de vista la lección:
+        </p>
+
+        <!-- Figura 2: Libreta de Apuntes -->
+        <div class="figure-container">
+          <div class="browser-mockup-header">
+            <div class="mockup-dots">
+              <span class="mockup-dot dot-red"></span>
+              <span class="mockup-dot dot-yellow"></span>
+              <span class="mockup-dot dot-green"></span>
+            </div>
+            <div class="mockup-title">LICStreamEdu - Libreta de Apuntes en Markdown con Vista Previa</div>
+          </div>
+          <img src="assets/manual-screen-notes.png"
+            alt="Captura de la libreta de apuntes abierta con formato Markdown en LICStreamEdu" class="figure-img">
+          <div class="figure-caption">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span><strong>Figura 2:</strong> Cajón lateral de notas con selector de fuentes, barra de formato Markdown,
+              renderizado en vivo y botones de exportación.</span>
+          </div>
+        </div>
+
+        <h3 class="subsection-title">Herramientas de Edición y Tipografía</h3>
+        <p>La libreta cuenta con una barra de herramientas completa en la parte superior:</p>
+        <ul class="feature-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Selector de Tipografía:</strong> Alterna instantáneamente entre tres familias de fuentes
+              optimizadas:
+              <br>• <code>Plus Jakarta (Sans)</code>: Moderna, limpia y de máxima legibilidad.
+              <br>• <code>JetBrains Mono</code>: Perfecta para cursos de programación y snippets de código.
+              <br>• <code>Merriweather</code>: Tipografía serif para lectura cómoda de apuntes largos.
+            </div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Selector de Tamaño:</strong> Elige entre <code>13px</code>, <code>15px</code>,
+              <code>17px</code> o <code>19px</code> según tus preferencias visuales.
+            </div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Botones Rápidos de Markdown:</strong> Encabezados (<code>H1</code>, <code>H2</code>,
+              <code>H3</code>), Negrita (<strong>B</strong>), Cursiva (<em>I</em>), Listas (≡), Citas (”) y Bloques de
+              Código (<code>&lt;&gt;</code>).
+            </div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Pestañas Editor / Vista Previa:</strong> Alterna entre la escritura en texto plano y la
+              previsualización formateada con resaltado de sintaxis, citas decoradas y etiquetas en vivo.</div>
+          </li>
+        </ul>
+
+        <h3 class="subsection-title">Anexar y Descargar Apuntes</h3>
+        <div class="hotspots-grid">
+          <div class="hotspot-card">
+            <div class="hotspot-num">1</div>
+            <div class="hotspot-body">
+              <h6>Botón «Anexar archivo»</h6>
+              <p>Permite importar apuntes existentes en formato <code>.md</code> o <code>.txt</code> desde tu
+                computadora, sumándolos al final de tus notas actuales sin sobrescribir lo que ya tenías.</p>
+            </div>
+          </div>
+          <div class="hotspot-card">
+            <div class="hotspot-num">2</div>
+            <div class="hotspot-body">
+              <h6>Botón «Descargar .md» (Windows Picker)</h6>
+              <p>Utiliza la API nativa del sistema operativo para abrir la ventana de guardado de Windows, permitiéndote
+                elegir la carpeta de destino y el nombre exacto del archivo.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-success">
+          <div class="callout-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="callout-content">
+            <h5>Auto-Guardado Inteligente («Guardado ✓»)</h5>
+            <p>
+              No necesitas presionar guardar constantemente. Cada pulsación de tecla se sincroniza en milisegundos con
+              el almacenamiento local del navegador, mostrando el badge verde confirmatorio.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           7. GESTIÓN DE CURSOS (JSON)
+           ========================================================================== -->
+      <section id="courses" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">7</div>
+          <h2 class="section-title">Gestión de Cursos y Especificación JSON</h2>
+        </div>
+
+        <p>
+          LICStreamEdu utiliza un esquema JSON abierto y universal. Puedes estructurar tus propios cursos en cualquier
+          editor de texto o compartir archivos <code>.json</code> con tus compañeros de estudio:
+        </p>
+
+        <h3 class="subsection-title">Estructura Estándar de un Archivo de Curso</h3>
+        <div class="code-block-wrap">
+          <pre><code>{
+  <span class="code-key">"title"</span>: <span class="code-str">"Masterclass de Desarrollo Web Frontend"</span>,
+  <span class="code-key">"description"</span>: <span class="code-str">"Curso completo desde fundamentos hasta arquitecturas avanzadas"</span>,
+  <span class="code-key">"version"</span>: <span class="code-str">"2.0.0"</span>,
+  <span class="code-key">"resources"</span>: [
+    {
+      <span class="code-key">"title"</span>: <span class="code-str">"MDN Web Docs"</span>,
+      <span class="code-key">"url"</span>: <span class="code-str">"https://developer.mozilla.org"</span>,
+      <span class="code-key">"type"</span>: <span class="code-str">"link"</span>
+    }
+  ],
+  <span class="code-key">"modules"</span>: [
+    {
+      <span class="code-key">"id"</span>: <span class="code-str">"mod_1"</span>,
+      <span class="code-key">"title"</span>: <span class="code-str">"Módulo 1: Fundamentos y Semántica Web"</span>,
+      <span class="code-key">"lessons"</span>: [
+        {
+          <span class="code-key">"id"</span>: <span class="code-str">"les_1_1"</span>,
+          <span class="code-key">"title"</span>: <span class="code-str">"1. Estructura y Semántica Moderna en HTML5"</span>,
+          <span class="code-key">"url"</span>: <span class="code-str">"https://www.youtube.com/watch?v=UB1O30fR-EE"</span>,
+          <span class="code-key">"duration"</span>: <span class="code-str">"1:08:44"</span>,
+          <span class="code-key">"completed"</span>: <span class="code-bool">false</span>,
+          <span class="code-key">"start"</span>: <span class="code-num">0</span>,
+          <span class="code-key">"end"</span>: <span class="code-num">4124</span>,
+          <span class="code-key">"notes"</span>: <span class="code-str">"Introducción a etiquetas header, nav, main y footer."</span>
+        }
+      ]
+    }
+  ]
+}</code></pre>
+        </div>
+
+        <h3 class="subsection-title">Campos Técnicos de cada Lección</h3>
+        <div class="table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Campo</th>
+                <th>Tipo</th>
+                <th>Obligatorio</th>
+                <th>Descripción y Ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>id</code></td>
+                <td>String</td>
+                <td>Sí</td>
+                <td>Identificador único alfanumérico (ej. <code>"les_01"</code>).</td>
+              </tr>
+              <tr>
+                <td><code>title</code></td>
+                <td>String</td>
+                <td>Sí</td>
+                <td>Nombre de la lección visible en la lista lateral.</td>
+              </tr>
+              <tr>
+                <td><code>url</code></td>
+                <td>String</td>
+                <td>Sí</td>
+                <td>Enlace de YouTube (completo o acortado).</td>
+              </tr>
+              <tr>
+                <td><code>completed</code></td>
+                <td>Boolean</td>
+                <td>No</td>
+                <td><code>true</code> o <code>false</code> para el estado de progreso.</td>
+              </tr>
+              <tr>
+                <td><code>start</code> / <code>end</code></td>
+                <td>Number</td>
+                <td>No</td>
+                <td>Segundo exacto de inicio y fin para reproducir solo un segmento del video.</td>
+              </tr>
+              <tr>
+                <td><code>notes</code></td>
+                <td>String</td>
+                <td>No</td>
+                <td>Apuntes o descripción contextual de la lección.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           8. GESTOR DE RECURSOS
+           ========================================================================== -->
+      <section id="resources" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">8</div>
+          <h2 class="section-title">Gestor de Recursos y Materiales</h2>
+        </div>
+
+        <p>
+          Al hacer clic en el botón <strong>«Recursos»</strong> de la barra superior, se despliega el panel modal de
+          documentación asociada al curso activo.
+        </p>
+
+        <ul class="feature-list">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Badge Contador:</strong> El botón superior incluye un indicador numérico que refleja cuántos
+              recursos están disponibles en el curso en todo momento.</div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Tipos de Enlaces:</strong> Documentación oficial, repositorios de código en GitHub, plantillas
+              de diseño en Figma o archivos PDF descargables.</div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <div><strong>Apertura Segura:</strong> Todos los enlaces externos se abren en pestañas independientes con
+              los atributos de seguridad <code>rel="noopener noreferrer"</code>.</div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ==========================================================================
+           9. LOS 8 TEMAS DE COLOR
+           ========================================================================== -->
+      <section id="themes" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">9</div>
+          <h2 class="section-title">Los 8 Temas de Color y Accesibilidad</h2>
+        </div>
+
+        <p>
+          LICStreamEdu cuenta con 8 paletas minuciosamente calibradas para ofrecer un contraste cromático superior a los
+          estándares de accesibilidad WCAG AAA:
+        </p>
+
+        <div class="themes-grid">
+          <!-- Obsidian -->
+          <div class="theme-preview-card">
+            <div class="theme-swatch-circle" style="background: #0b0f19;">
+              <div class="theme-swatch-inner" style="background: #6366f1;"></div>
+            </div>
+            <div class="theme-card-info">
+              <h6>Obsidian Dark</h6>
+              <span>Fondo oscuro con acento Índigo</span>
+            </div>
+          </div>
+
+          <!-- Cyber Emerald -->
+          <div class="theme-preview-card">
+            <div class="theme-swatch-circle" style="background: #051814;">
+              <div class="theme-swatch-inner" style="background: #10b981;"></div>
+            </div>
+            <div class="theme-card-info">
+              <h6>Cyber Emerald</h6>
+              <span>Verde Esmeralda y Menta</span>
+            </div>
+          </div>
+
+          <!-- Nordic Frost -->
+          <div class="theme-preview-card">
+            <div class="theme-swatch-circle" style="background: #0a1224;">
+              <div class="theme-swatch-inner" style="background: #06b6d4;"></div>
+            </div>
+            <div class="theme-card-info">
+              <h6>Nordic Frost</h6>
+              <span>Azul Polar con Cian Glaciar</span>
+            </div>
+          </div>
+
+          <!-- Sunset Amber -->
+          <div class="theme-preview-card">
+            <div class="theme-swatch-circle" style="background: #17120c;">
+              <div class="theme-swatch-inner" style="background: #f59e0b;"></div>
+            </div>
+            <div class="theme-card-info">
+              <h6>Sunset Amber</h6>
+              <span>Carbón cálido y Ámbar Fuego</span>
+            </div>
+          </div>
+
+          <!-- Clean Light -->
+          <div class="theme-preview-card">
+            <div class="theme-swatch-circle" style="background: #f8fafc;">
+              <div class="theme-swatch-inner" style="background: #2563eb;"></div>
+            </div>
+            <div class="theme-card-info">
+              <h6>Clean Light</h6>
+              <span>Modo claro y Azul Zafiro</span>
+            </div>
+          </div>
+
+          <!-- Rose Quartz -->
+          <div class="theme-preview-card">
+            <div class="theme-swatch-circle" style="background: #180e19;">
+              <div class="theme-swatch-inner" style="background: #f43f5e;"></div>
+            </div>
+            <div class="theme-card-info">
+              <h6>Rose Quartz</h6>
+              <span>Pizarra y Rosa Eléctrico</span>
+            </div>
+          </div>
+
+          <!-- Lemon Ice-Cream (Activo) -->
+          <div class="theme-preview-card active-lemon">
+            <div class="theme-swatch-circle" style="background: #faf7ee; border-color: #c98900;">
+              <div class="theme-swatch-inner" style="background: #fee035;"></div>
+            </div>
+            <div class="theme-card-info">
+              <h6>Lemon Ice-Cream ⭐</h6>
+              <span>Vainilla, Limón y Menta (Activo)</span>
+            </div>
+          </div>
+
+          <!-- Iron-Man -->
+          <div class="theme-preview-card">
+            <div class="theme-swatch-circle" style="background: #120809; border-color: #d32f2f;">
+              <div class="theme-swatch-inner" style="background: #d32f2f;"></div>
+            </div>
+            <div class="theme-card-info">
+              <h6>Iron-Man</h6>
+              <span>Carmesí Stark, Oro y Arc Cyan</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 10 10 0 0 0 0-20"></path>
+            </svg>
+          </div>
+          <div class="callout-content">
+            <h5>Adaptación Inteligente de Logotipos</h5>
+            <p>
+              Al cambiar de tema, la aplicación detecta si la paleta seleccionada es de fondo claro (como <strong>Clean
+                Light</strong> o <strong>Lemon Ice-Cream</strong>) o fondo oscuro (como <strong>Obsidian</strong> o
+              <strong>Iron-Man</strong>). Automáticamente conmuta el archivo del isotipo a <code>logo-light.png</code> o
+              <code>logo-dark.png</code> para garantizar una legibilidad inmaculada.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           10. ATAJOS Y PREGUNTAS FRECUENTES
+           ========================================================================== -->
+      <section id="shortcuts" class="manual-section">
+        <div class="section-header">
+          <div class="section-icon-badge">10</div>
+          <h2 class="section-title">Atajos de Teclado y Preguntas Frecuentes</h2>
+        </div>
+
+        <h3 class="subsection-title">Tabla de Atajos de Teclado</h3>
+        <div class="table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Función / Acción</th>
+                <th>Atajo de Teclado</th>
+                <th>Contexto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Avanzar al siguiente paso del Tour</strong></td>
+                <td><span class="kbd">Enter</span> o <span class="kbd">→ Flecha Derecha</span></td>
+                <td>Durante el Spotlight Tour</td>
+              </tr>
+              <tr>
+                <td><strong>Retroceder al paso previo del Tour</strong></td>
+                <td><span class="kbd">← Flecha Izquierda</span></td>
+                <td>Durante el Spotlight Tour</td>
+              </tr>
+              <tr>
+                <td><strong>Cerrar / Omitir el Tour</strong></td>
+                <td><span class="kbd">Esc</span></td>
+                <td>Durante el Spotlight Tour</td>
+              </tr>
+              <tr>
+                <td><strong>Cerrar modales o cajón de notas</strong></td>
+                <td><span class="kbd">Esc</span></td>
+                <td>En cualquier ventana emergente</td>
+              </tr>
+              <tr>
+                <td><strong>Imprimir o Exportar Manual a PDF</strong></td>
+                <td><span class="kbd">Ctrl</span> + <span class="kbd">P</span></td>
+                <td>En esta página de manual</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="subsection-title">Preguntas Frecuentes (FAQ)</h3>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>¿Qué debo hacer si un video muestra «Video no disponible» o «Reproducción restringida»?</span>
+            <svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+          <div class="faq-answer">
+            Algunos creadores de YouTube deshabilitan la opción de reproducción embebida en sitios externos por motivos
+            de derechos de autor. En ese caso, haz clic en el botón <strong>«Mirar en YouTube»</strong> (o el ícono ↗ de
+            la barra inferior) para reproducirlo directamente en YouTube sin perder tu lugar en el curso.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>¿Puedo perder mis apuntes y cursos si borro el historial del navegador?</span>
+            <svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+          <div class="faq-answer">
+            Si borras las "Cookies y datos del sitio" de tu navegador, se limpiará el almacenamiento local. Por esa
+            razón, te recomendamos usar periódicamente el botón <strong>«Exportar JSON»</strong> para guardar un
+            respaldo de tus cursos, y el botón <strong>«Descargar .md»</strong> en la libreta para conservar tus notas
+            en tu disco duro o sincronizarlas con Google Drive o GitHub.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>¿Cómo puedo compartir un curso que he creado con otra persona?</span>
+            <svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+          <div class="faq-answer">
+            Simplemente haz clic en <strong>«Exportar JSON»</strong>. Se descargará un archivo liviano (menos de 50 KB).
+            Puedes enviárselo a cualquier persona por correo electrónico, WhatsApp o subirlo a la nube. Tu colega solo
+            tendrá que abrir LICStreamEdu y hacer clic en <strong>«Cargar JSON»</strong> para tener la estructura exacta
+            lista para estudiar.
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       PIE DE PÁGINA
+       ========================================================================== -->
+  <footer class="manual-footer">
+    <div>
+      <strong>LICStreamEdu</strong> &copy; 2026 - Manual de Usuario Oficial. Desarrollado con Vanilla JS y CSS3.
+    </div>
+    <div class="footer-links">
+      <a href="index.html">← Volver al Reproductor</a>
+      <a href="#intro">↑ Subir al Inicio</a>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       SCRIPTS INTERACTIVOS LIGEROS (SCROLL SPY, BUSCADOR & MÓVIL)
+       ========================================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Alternar menú lateral en dispositivos móviles
+      const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+      const manualSidebar = document.getElementById('manualSidebar');
+
+      if (btnToggleSidebar && manualSidebar) {
+        btnToggleSidebar.addEventListener('click', () => {
+          manualSidebar.classList.toggle('open');
+        });
+
+        // Cerrar menú al hacer clic en un enlace de navegación
+        manualSidebar.querySelectorAll('.nav-item a').forEach(link => {
+          link.addEventListener('click', () => {
+            manualSidebar.classList.remove('open');
+          });
+        });
+      }
+
+      // 2. Scroll Spy: Resaltar sección activa en la barra lateral
+      const sections = document.querySelectorAll('.manual-section');
+      const navItems = document.querySelectorAll('.nav-item');
+
+      window.addEventListener('scroll', () => {
+        let currentSectionId = '';
+        const scrollPosition = window.scrollY + 120;
+
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.offsetHeight;
+          if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+            currentSectionId = section.getAttribute('id');
+          }
+        });
+
+        if (currentSectionId) {
+          navItems.forEach(item => {
+            const link = item.querySelector('a');
+            if (link && link.getAttribute('href') === `#${currentSectionId}`) {
+              item.classList.add('active');
+            } else {
+              item.classList.remove('active');
+            }
+          });
+        }
+      });
+
+      // 3. Buscador en tiempo real dentro del manual
+      const searchInput = document.getElementById('manualSearchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const query = e.target.value.toLowerCase().trim();
+          const searchableParagraphs = document.querySelectorAll('.manual-section p, .manual-section h2, .manual-section h3, .manual-section li, .custom-table td');
+
+          if (!query) {
+            sections.forEach(sec => sec.style.display = 'block');
+            return;
+          }
+
+          sections.forEach(section => {
+            const sectionText = section.textContent.toLowerCase();
+            if (sectionText.includes(query)) {
+              section.style.display = 'block';
+            } else {
+              section.style.display = 'none';
+            }
+          });
+        });
+      }
+
+      // 4. Acordeón interactivo para FAQs
+      document.querySelectorAll('.faq-question').forEach(header => {
+        header.addEventListener('click', () => {
+          const answer = header.nextElementSibling;
+          const icon = header.querySelector('.faq-icon');
+          if (answer.style.display === 'none') {
+            answer.style.display = 'block';
+            if (icon) icon.style.transform = 'rotate(180deg)';
+          } else {
+            answer.style.display = 'none';
+            if (icon) icon.style.transform = 'rotate(0deg)';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,6 +1,6 @@
 /**
  * themes.js
- * Módulo para la gestión de 6 paletas de colores predefinidas.
+ * Módulo para la gestión de 8 paletas de colores predefinidas.
  * Administra el cambio dinámico del tema, la actualización del atributo data-theme
  * y la persistencia en localStorage.
  */
@@ -53,6 +53,22 @@ const THEMES = [
     accentColor: '#f43f5e',
     bgColor: '#180e19',
     cardColor: '#2a162b'
+  },
+  {
+    id: 'lemon',
+    name: 'Lemon Ice-Cream',
+    description: 'Vainilla cremosa con acento amarillo limón y menta',
+    accentColor: '#fee035',
+    bgColor: '#faf7ee',
+    cardColor: '#ffffff'
+  },
+  {
+    id: 'ironman',
+    name: 'Iron-Man',
+    description: 'Armadura carmesí y oro con resplandor reactor Arc',
+    accentColor: '#d32f2f',
+    bgColor: '#14090a',
+    cardColor: '#1c0d10'
   }
 ];
 
@@ -81,6 +97,34 @@ const ThemeManager = {
 
     // Actualiza indicador visual en la UI
     this.updateActiveIndicators();
+
+    // Actualiza el logo correspondiente según el tema
+    this.updateThemeLogos(selected);
+  },
+
+  /**
+   * Actualiza las imágenes de logotipo según el tema activo (claro u oscuro)
+   * para garantizar contraste perfecto y nitidez en cualquier resolución.
+   * @param {string} themeId 
+   */
+  updateThemeLogos(themeId) {
+    const isLight = themeId === 'light' || themeId === 'clean' || themeId === 'lemon';
+    const logoSrc = isLight ? 'assets/logo-light.png' : 'assets/logo-dark.png';
+
+    const brandLogo = document.getElementById('brandLogoImg');
+    if (brandLogo && brandLogo.getAttribute('src') !== logoSrc) {
+      brandLogo.src = logoSrc;
+    }
+
+    const emptyLogo = document.getElementById('emptyLogoImg');
+    if (emptyLogo && emptyLogo.getAttribute('src') !== logoSrc) {
+      emptyLogo.src = logoSrc;
+    }
+
+    const welcomeLogo = document.getElementById('welcomeLogoImg');
+    if (welcomeLogo && welcomeLogo.getAttribute('src') !== logoSrc) {
+      welcomeLogo.src = logoSrc;
+    }
   },
 
   /**
