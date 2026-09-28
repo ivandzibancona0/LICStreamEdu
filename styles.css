@@ -2561,7 +2561,7 @@ button {
   background: var(--bg-surface);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 10px;
   flex-shrink: 0;
   position: relative;
