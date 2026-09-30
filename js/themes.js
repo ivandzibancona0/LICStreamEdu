@@ -73,13 +73,25 @@ const THEMES = [
 ];
 
 const ThemeManager = {
-  currentTheme: 'obsidian',
+  currentTheme: 'lemon',
 
   /**
-   * Inicializa el tema guardado en localStorage o el predeterminado
+   * Inicializa el tema guardado en localStorage o el predeterminado (Lemon Ice-Cream)
    */
   init() {
-    const savedTheme = LocalStorageManager.get(STORAGE_KEYS.THEME, 'obsidian');
+    const themeVersion = LocalStorageManager.get('course_player_theme_version', 1);
+    let savedTheme = LocalStorageManager.get(STORAGE_KEYS.THEME, null);
+
+    // Migración automática: si venía del antiguo predeterminado 'obsidian' o no hay selección, usar 'lemon'
+    if (themeVersion < 2) {
+      if (!savedTheme || savedTheme === 'obsidian') {
+        savedTheme = 'lemon';
+      }
+      LocalStorageManager.set('course_player_theme_version', 2);
+    } else if (!savedTheme) {
+      savedTheme = 'lemon';
+    }
+
     this.applyTheme(savedTheme);
   },
 
@@ -89,7 +101,7 @@ const ThemeManager = {
    */
   applyTheme(themeId) {
     const themeExists = THEMES.some(t => t.id === themeId);
-    const selected = themeExists ? themeId : 'obsidian';
+    const selected = themeExists ? themeId : 'lemon';
 
     this.currentTheme = selected;
     document.documentElement.setAttribute('data-theme', selected);

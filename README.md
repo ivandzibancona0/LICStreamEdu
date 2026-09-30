@@ -42,7 +42,7 @@ Diseñada con enfoque **Mobile-First**, soporte de **8 paletas de colores interc
 - **Sunset Amber**: Grafito cálido con acento Ámbar/Fuego.
 - **Clean Light**: Modo claro minimalista con alto contraste y acento Azul Zafiro.
 - **Rose Quartz**: Púrpura sofisticado con acento Rosa Eléctrico.
-- **Lemon Ice-Cream**: Modo claro cálido y cremoso con acento Amarillo Limón, Menta e índigo profundo.
+- **Lemon Ice-Cream** *(Predeterminado)*: Modo claro cálido y cremoso con acento Amarillo Limón, Menta e índigo profundo.
 - **Iron-Man**: Modo oscuro tecnológico inspirado en la armadura Mark con Carmesí Stark, Oro y resplandor reactor Arc.
 - Selector interactivo con vista previa visual de swatches y persistencia en `localStorage`.
 

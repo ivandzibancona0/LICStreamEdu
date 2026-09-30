@@ -29,10 +29,12 @@
   --z-backdrop: 60;
   --z-modal: 70;
   --z-toast: 80;
+
+  --backdrop-filter: blur(12px);
 }
 
-/* TEMA 1: Obsidian Dark (Predeterminado) */
-[data-theme="obsidian"], :root {
+/* TEMA 1: Obsidian Dark */
+[data-theme="obsidian"] {
   --bg-app: #090d16;
   --bg-surface: #101726;
   --bg-surface-elevated: #162035;
@@ -59,7 +61,6 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.65);
-  --backdrop-filter: blur(12px);
 }
 
 /* TEMA 2: Cyber Emerald */
@@ -212,8 +213,8 @@
   --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.75);
 }
 
-/* TEMA 7: Lemon Ice-Cream (Tema Claro Cremoso y Refrescante) */
-[data-theme="lemon"] {
+/* TEMA 7: Lemon Ice-Cream (Predeterminado - Tema Claro Cremoso y Refrescante) */
+[data-theme="lemon"], :root {
   --bg-app: #faf7ee;
   --bg-surface: #ffffff;
   --bg-surface-elevated: #f4efdf;
@@ -556,6 +557,27 @@ a.btn-icon:hover {
 .brand-logo-img,
 .empty-logo-img,
 .welcome-logo-img {
+  content: url('assets/logo-light.png');
+}
+
+[data-theme="obsidian"] .brand-logo-img,
+[data-theme="obsidian"] .empty-logo-img,
+[data-theme="obsidian"] .welcome-logo-img,
+[data-theme="emerald"] .brand-logo-img,
+[data-theme="emerald"] .empty-logo-img,
+[data-theme="emerald"] .welcome-logo-img,
+[data-theme="frost"] .brand-logo-img,
+[data-theme="frost"] .empty-logo-img,
+[data-theme="frost"] .welcome-logo-img,
+[data-theme="amber"] .brand-logo-img,
+[data-theme="amber"] .empty-logo-img,
+[data-theme="amber"] .welcome-logo-img,
+[data-theme="rose"] .brand-logo-img,
+[data-theme="rose"] .empty-logo-img,
+[data-theme="rose"] .welcome-logo-img,
+[data-theme="ironman"] .brand-logo-img,
+[data-theme="ironman"] .empty-logo-img,
+[data-theme="ironman"] .welcome-logo-img {
   content: url('assets/logo-dark.png');
 }
 
