@@ -98,8 +98,8 @@
         <!-- Botón Manual de Usuario -->
         <a href="manual.html" target="_blank" rel="noopener noreferrer" class="btn btn-icon btn-sm" id="btnOpenManual" title="Manual de Usuario" aria-label="Manual de Usuario">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
           </svg>
         </a>
 
@@ -1143,158 +1143,144 @@
   <div class="notes-backdrop" id="notesDrawerBackdrop" aria-hidden="true"></div>
 
   <!-- ======================================================= -->
-  <!-- DRAWER: LIBRETA DE APUNTES                              -->
+  <!-- DRAWER: LIBRETA DE APUNTES ESTILO OBSIDIAN (DE LICBOOK) -->
   <!-- ======================================================= -->
-  <aside class="notes-drawer" id="notesDrawer" aria-hidden="true" role="dialog" aria-labelledby="notesDrawerTitle">
+  <aside class="notes-drawer reader-notes-drawer" id="notesDrawer" aria-hidden="true" role="dialog" aria-labelledby="notesDrawerTitle">
     
     <!-- Cabecera del Drawer -->
-    <div class="notes-header">
-      <div class="notes-header-left">
-        <button type="button" class="btn btn-icon btn-sm notes-close-btn" id="btnCloseNotesDrawer" aria-label="Cerrar libreta de apuntes" title="Cerrar libreta">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <div class="notes-drawer-header">
+      <div class="notes-header-info">
+        <div class="notes-header-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="notes-header-book-icon" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span id="notesDrawerTitle">Libreta de Apuntes</span>
+        </div>
+        <span class="notes-book-title" id="notes-book-title">Cargando curso...</span>
+      </div>
+      <div class="notes-header-actions">
+        <span class="notes-save-status" id="notes-save-status">
+          <span class="save-status-dot"></span> Guardado
+        </span>
+        <button type="button" class="btn-icon notes-close-btn" id="btn-close-notes" title="Cerrar libreta de apuntes" aria-label="Cerrar libreta">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
-        <div class="notes-title-wrap">
-          <h3 class="notes-title" id="notesDrawerTitle">Libreta de apuntes</h3>
-          <span class="notes-save-badge" id="notesSaveStatus">Guardado ✓</span>
-        </div>
-      </div>
-
-      <!-- Alternador de Vista (Editor / Vista Previa Markdown) -->
-      <div class="notes-view-toggle">
-        <button type="button" class="notes-toggle-btn active" id="btnNotesViewEditor" title="Modo edición Markdown">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"></path>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-          </svg>
-          <span>Editor</span>
-        </button>
-        <button type="button" class="notes-toggle-btn" id="btnNotesViewPreview" title="Vista previa con formato renderizado">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-          <span>Vista Previa</span>
-        </button>
       </div>
     </div>
 
-    <!-- Barra de Herramientas Visual de Formato -->
-    <div class="notes-toolbar">
-      
-      <!-- Fila 1: Tipografía, Tamaño y Color -->
-      <div class="notes-toolbar-row">
-        <!-- Selector de Familia Tipográfica (5 Fuentes) -->
-        <select class="notes-select" id="notesFontSelect" title="Tipo de letra" aria-label="Seleccionar tipografía">
-          <option value="font-architects">Architects (Mano alzada)</option>
-          <option value="font-jakarta" selected>Plus Jakarta (Sans)</option>
-          <option value="font-merriweather">Merriweather (Serif)</option>
-          <option value="font-jetbrains">JetBrains (Código Mono)</option>
-          <option value="font-patrick">Patrick Hand (Escolar)</option>
-        </select>
-
-        <!-- Selector de Tamaño de Fuente -->
-        <select class="notes-select notes-select-sm" id="notesFontSizeSelect" title="Tamaño de texto" aria-label="Tamaño de texto">
-          <option value="13px">13 px</option>
-          <option value="15px" selected>15 px</option>
-          <option value="18px">18 px</option>
-          <option value="21px">21 px</option>
-        </select>
-
-        <!-- Selector de Color de Texto -->
-        <div class="notes-color-picker-wrap" title="Color de texto">
-          <label for="notesColorInput" class="notes-color-label" aria-label="Cambiar color del texto">
-            <span class="notes-color-swatch" id="notesColorPreviewSwatch"></span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
-            </svg>
-          </label>
-          <input type="color" id="notesColorInput" value="#6366f1" class="notes-color-input">
-        </div>
-      </div>
-
-      <!-- Fila 2: Formatos Rápidos de Markdown -->
-      <div class="notes-toolbar-row notes-toolbar-buttons">
-        
-        <!-- Encabezados H1, H2, H3 -->
-        <button type="button" class="notes-tool-btn" data-tool="h1" title="Encabezado H1 (# )"><strong>H1</strong></button>
-        <button type="button" class="notes-tool-btn" data-tool="h2" title="Encabezado H2 (## )"><strong>H2</strong></button>
-        <button type="button" class="notes-tool-btn" data-tool="h3" title="Encabezado H3 (### )"><strong>H3</strong></button>
-        
-        <span class="notes-tool-separator"></span>
-
-        <!-- Negrita, Cursiva -->
-        <button type="button" class="notes-tool-btn" data-tool="bold" title="Negrita (**texto**)">
-          <strong>B</strong>
-        </button>
-        <button type="button" class="notes-tool-btn" data-tool="italic" title="Cursiva (*texto*)">
-          <em>I</em>
-        </button>
-
-        <span class="notes-tool-separator"></span>
-
-        <!-- Lista, Cita, Código -->
-        <button type="button" class="notes-tool-btn" data-tool="list" title="Lista con viñetas (- )">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="8" y1="6" x2="21" y2="6"></line>
-            <line x1="8" y1="12" x2="21" y2="12"></line>
-            <line x1="8" y1="18" x2="21" y2="18"></line>
-            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-          </svg>
-        </button>
-        <button type="button" class="notes-tool-btn" data-tool="quote" title="Cita (> )">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
-            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
-          </svg>
-        </button>
-        <button type="button" class="notes-tool-btn" data-tool="code" title="Código (`código`)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="16 18 22 12 16 6"></polyline>
-            <polyline points="8 6 2 12 8 18"></polyline>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Área de Contenido: Editor / Vista Previa -->
-    <div class="notes-body">
-      <!-- Editor Markdown (Textarea) -->
-      <textarea 
-        id="notesTextarea" 
-        class="notes-editor font-jakarta" 
-        placeholder="Escribe tus apuntes aquí en formato Markdown...&#10;&#10;# Conceptos clave&#10;- Punto 1&#10;- Punto 2"
-        spellcheck="true"
-        aria-label="Contenido de apuntes"></textarea>
-      
-      <!-- Contenedor de Vista Previa Renderizada (Oculto por defecto) -->
-      <div id="notesPreviewContainer" class="notes-preview font-jakarta hidden"></div>
-    </div>
-
-    <!-- Pie del Drawer: Botones Anexar y Descargar -->
-    <div class="notes-footer">
-      <!-- Input oculto para anexar archivos .md o .txt (se activa únicamente al hacer clic en el botón Anexar) -->
-      <input type="file" id="notesFileInput" accept=".md,.txt,text/plain,text/markdown" style="display: none;">
-
-      <button type="button" class="btn btn-secondary btn-sm" id="btnAppendNotesFile" title="Anexar contenido de un archivo .md o .txt al final de los apuntes">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
-        </svg>
-        <span>Anexar archivo</span>
-      </button>
-
-      <button type="button" class="btn btn-primary btn-sm" id="btnDownloadNotes" title="Descargar apuntes en archivo .md con nombre personalizado">
+    <!-- Barra de Acciones: Descargar .md y Anexar .md/.txt -->
+    <div class="notes-actions-bar">
+      <button type="button" class="btn-notes-action" id="btn-download-notes" title="Descargar tus apuntes en formato Markdown (.md)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="7 10 12 15 17 10"></polyline>
           <line x1="12" y1="15" x2="12" y2="3"></line>
         </svg>
-        <span>Descargar .md</span>
+        <span>Descargar</span>
       </button>
+
+      <button type="button" class="btn-notes-action" id="btn-append-notes" title="Anexar información desde un archivo externo (.md o .txt)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+        </svg>
+        <span>Anexar texto</span>
+      </button>
+      <!-- Input oculto para anexar archivos -->
+      <input type="file" id="notes-file-input" accept=".md,.txt,text/plain,text/markdown" style="display: none;">
+    </div>
+
+    <!-- Barra de Herramientas Markdown Estilo Obsidian (Modos Editar/Previa y Formatos) -->
+    <div class="notes-markdown-toolbar" id="notes-markdown-toolbar">
+      <!-- Selector de Modo de Vista (Pestañas Editar / Previa) -->
+      <div class="notes-view-tabs">
+        <button type="button" class="btn-notes-tab active" id="btn-notes-tab-edit" title="Modo edición Markdown">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>Editar</span>
+        </button>
+        <button type="button" class="btn-notes-tab" id="btn-notes-tab-preview" title="Vista previa estilo Obsidian">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span>Previa</span>
+        </button>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <!-- Grupo de Herramientas de Formato -->
+      <div class="notes-tools-group" id="notes-formatting-tools">
+        <!-- Encabezados H1, H2, H3 -->
+        <div class="tools-subgroup">
+          <button type="button" class="btn-tool" data-action="h1" title="Encabezado 1 (# Título)">H1</button>
+          <button type="button" class="btn-tool" data-action="h2" title="Encabezado 2 (## Título)">H2</button>
+          <button type="button" class="btn-tool" data-action="h3" title="Encabezado 3 (### Título)">H3</button>
+        </div>
+
+        <div class="toolbar-divider-sm"></div>
+
+        <!-- Negrita, Cursiva, Tachado, Resaltado Obsidian -->
+        <div class="tools-subgroup">
+          <button type="button" class="btn-tool tool-bold" data-action="bold" title="Negrita (**texto**) [Ctrl+B]"><strong>B</strong></button>
+          <button type="button" class="btn-tool tool-italic" data-action="italic" title="Cursiva (*texto*) [Ctrl+I]"><em>I</em></button>
+          <button type="button" class="btn-tool tool-strike" data-action="strike" title="Tachado (~~texto~~) [Ctrl+Shift+S]"><s>S</s></button>
+          <button type="button" class="btn-tool tool-highlight" data-action="highlight" title="Resaltado Obsidian (==texto==) [Ctrl+Shift+H]">
+            <span class="tool-highlight-badge">==</span>
+          </button>
+        </div>
+
+        <div class="toolbar-divider-sm"></div>
+
+        <!-- Citas, Listas, Tareas, Código, Separador -->
+        <div class="tools-subgroup">
+          <button type="button" class="btn-tool" data-action="quote" title="Cita (> )">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>
+          </button>
+          <button type="button" class="btn-tool" data-action="bullet-list" title="Lista de viñetas (- )">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          </button>
+          <button type="button" class="btn-tool" data-action="task-list" title="Tarea Obsidian (- [ ] )">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><polyline points="9 11 12 14 17 9"></polyline></svg>
+          </button>
+          <button type="button" class="btn-tool" data-action="code" title="Código (`código` o ```bloque)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          </button>
+          <button type="button" class="btn-tool" data-action="hr" title="Separador horizontal (---)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cuerpo del Editor Markdown y Vista Previa Obsidian -->
+    <div class="notes-editor-body" id="notes-editor-body">
+      <textarea 
+        id="reader-notes-textarea" 
+        class="reader-notes-textarea" 
+        placeholder="Escribe tus apuntes con formato Markdown tipo Obsidian (# Título, **negrita**, *cursiva*, ==resaltado==, - [ ] tarea)..."
+        spellcheck="false"
+        aria-label="Contenido de apuntes"
+      ></textarea>
+      <div 
+        id="reader-notes-preview" 
+        class="reader-notes-preview" 
+        style="display: none;"
+        tabindex="0"
+        aria-label="Vista previa de apuntes"
+      ></div>
+    </div>
+
+    <!-- Pie del Drawer con Estadísticas en Tiempo Real -->
+    <div class="notes-drawer-footer">
+      <span id="notes-char-count">0 caracteres</span>
+      <span id="notes-word-count">0 palabras</span>
     </div>
 
   </aside>

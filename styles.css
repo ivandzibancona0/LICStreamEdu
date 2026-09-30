@@ -352,6 +352,7 @@ button {
   transition: all var(--transition-fast);
   white-space: nowrap;
   text-decoration: none;
+  color: inherit;
 }
 
 .btn:disabled {
@@ -442,10 +443,21 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  color: var(--text-muted);
   transition: all var(--transition-fast);
 }
 
 .btn-icon:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--primary);
+}
+
+a.btn-icon {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+a.btn-icon:hover {
   background: var(--bg-hover);
   color: var(--primary);
 }
@@ -2199,7 +2211,9 @@ button {
   }
 }
 
-/* Panel Drawer */
+
+/* Panel Drawer (Réplica Exacta de LICBook) */
+.reader-notes-drawer,
 .notes-drawer {
   position: fixed;
   top: 0;
@@ -2207,367 +2221,590 @@ button {
   bottom: 0;
   width: 480px;
   max-width: 95vw;
-  background: var(--bg-surface);
-  z-index: var(--z-modal);
+  background-color: var(--bg-surface);
   border-left: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-lg);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.65);
+  z-index: var(--z-modal);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
-  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
+.reader-notes-drawer.open,
 .notes-drawer.open {
   transform: translateX(0);
 }
 
 /* Cabecera del Drawer */
-.notes-header {
-  padding: 14px 16px;
+.notes-drawer-header {
+  padding: 14px 18px;
+  background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  background: var(--bg-surface);
+  gap: 12px;
   flex-shrink: 0;
 }
 
-.notes-header-left {
+.notes-header-info {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
 }
 
-.notes-title-wrap {
+.notes-header-title {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.notes-title {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-main);
 }
 
-.notes-save-badge {
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
+.notes-header-book-icon {
+  color: var(--primary);
   flex-shrink: 0;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--success);
-  background: var(--success-subtle);
-  padding: 2px 7px;
-  border-radius: var(--radius-full);
-  transition: all var(--transition-fast);
 }
 
-.notes-save-badge.saving {
-  color: var(--warning);
-  background: rgba(245, 158, 11, 0.15);
+.notes-book-title {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notes-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.notes-save-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  background-color: var(--bg-surface-elevated);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+}
+
+.save-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  display: inline-block;
+  box-shadow: 0 0 6px var(--primary-glow);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.save-status-dot.saving {
+  background-color: var(--warning);
+  box-shadow: 0 0 6px var(--warning);
+  animation: pulseDot 1s infinite alternate;
+}
+
+@keyframes pulseDot {
+  0% { opacity: 0.4; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.2); }
 }
 
 .notes-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
   color: var(--text-muted);
-  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .notes-close-btn:hover {
   background: var(--bg-hover);
+  border-color: var(--primary);
   color: var(--text-main);
 }
 
-/* Alternador de Vista (Editor / Preview) */
-.notes-view-toggle {
+/* Barra de Acciones: Descargar & Anexar */
+.notes-actions-bar {
   display: flex;
-  background: var(--bg-input);
-  padding: 3px;
-  border-radius: var(--radius-sm);
-  gap: 2px;
-}
-
-.notes-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 8px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  border-radius: var(--radius-xs);
-  color: var(--text-muted);
-  transition: all var(--transition-fast);
-}
-
-.notes-toggle-btn.active {
-  background: var(--bg-surface-elevated);
-  color: var(--primary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-/* Barra de Herramientas Visual (Toolbar) */
-.notes-toolbar {
-  padding: 10px 14px;
-  background: var(--bg-surface-elevated);
-  border-bottom: 1px solid var(--border-subtle);
-  display: flex;
-  flex-direction: column;
   gap: 8px;
+  padding: 10px 16px;
+  background-color: var(--bg-surface-elevated);
+  border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
 
-.notes-toolbar-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.notes-select {
-  padding: 5px 8px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
-  font-size: 0.78rem;
-  color: var(--text-main);
-  cursor: pointer;
-  transition: border-color var(--transition-fast);
-}
-
-.notes-select:focus {
-  border-color: var(--border-focus);
-}
-
-.notes-select-sm {
-  width: 72px;
-}
-
-/* Selector de Color de Texto */
-.notes-color-picker-wrap {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.notes-color-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 8px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: border-color var(--transition-fast);
-}
-
-.notes-color-label:hover {
-  border-color: var(--border-focus);
-  color: var(--text-main);
-}
-
-.notes-color-swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: var(--primary);
-  border: 1.5px solid var(--bg-surface);
-}
-
-.notes-color-input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
-/* Botones de Formato Rápido */
-.notes-tool-btn {
-  width: 28px;
-  height: 28px;
+.btn-notes-action {
+  flex: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-xs);
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
   font-size: 0.78rem;
+  font-weight: 600;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
   transition: all var(--transition-fast);
 }
 
-.notes-tool-btn:hover {
-  background: var(--bg-hover);
-  color: var(--text-main);
-  border-color: var(--border-focus);
+.btn-notes-action:hover {
+  background-color: var(--bg-hover);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
-.notes-tool-separator {
+.btn-notes-action svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* Barra de Herramientas Markdown Estilo Obsidian */
+.notes-markdown-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+
+.notes-markdown-toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Selector de Pestañas (Editar / Previa) */
+.notes-view-tabs {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.btn-notes-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--transition-fast);
+}
+
+.btn-notes-tab:hover {
+  color: var(--text-main);
+}
+
+.btn-notes-tab.active {
+  background-color: var(--primary);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.toolbar-divider {
   width: 1px;
   height: 18px;
-  background: var(--border-subtle);
+  background-color: var(--border-subtle);
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+.toolbar-divider-sm {
+  width: 1px;
+  height: 14px;
+  background-color: var(--border-subtle);
   margin: 0 2px;
+  flex-shrink: 0;
 }
 
-/* Familias Tipográficas */
-.font-architects {
-  font-family: 'Architects Daughter', cursive, sans-serif !important;
-  letter-spacing: 0.02em;
+/* Grupo de Herramientas de Formato */
+.notes-tools-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  transition: opacity var(--transition-fast);
 }
 
-.font-patrick {
-  font-family: 'Patrick Hand', cursive, sans-serif !important;
-  letter-spacing: 0.02em;
+.notes-tools-group.disabled {
+  opacity: 0.3;
+  pointer-events: none;
 }
 
-.font-merriweather {
-  font-family: 'Merriweather', Georgia, serif !important;
+.tools-subgroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
-.font-jetbrains {
-  font-family: 'JetBrains Mono', Consolas, monospace !important;
+.btn-tool {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  border-radius: 4px;
+  min-width: 25px;
+  height: 25px;
+  padding: 0 5px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
 }
 
-.font-jakarta {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+.btn-tool:hover {
+  background-color: var(--bg-hover);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
-/* Área de Contenido */
-.notes-body {
+.btn-tool:active {
+  transform: translateY(0);
+}
+
+.tool-highlight-badge {
+  background-color: rgba(250, 204, 21, 0.25);
+  color: #FACC15;
+  padding: 0 2px;
+  border-radius: 2px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  font-family: monospace;
+}
+
+/* ==========================================================================
+   Cuerpo del Editor y Vista Previa Obsidian
+   ========================================================================== */
+.notes-editor-body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  padding: 0;
+  background-color: var(--bg-app);
   overflow: hidden;
   position: relative;
-  background: var(--bg-input);
+  margin: 10px 14px;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 14px var(--primary-glow);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.notes-editor {
-  flex: 1;
+.notes-editor-body:focus-within {
+  border-color: var(--primary-hover, var(--primary));
+  box-shadow: 0 0 18px var(--primary-glow);
+}
+
+.reader-notes-textarea {
   width: 100%;
-  padding: 16px;
-  background: transparent;
-  color: var(--text-main);
-  line-height: 1.6;
+  height: 100%;
+  padding: 14px 16px;
+  box-sizing: border-box;
   resize: none;
+  background: transparent;
   border: none;
   outline: none;
-  overflow-y: auto;
+  color: var(--text-main);
+  font-family: var(--font-family);
+  font-size: 0.88rem;
+  line-height: 1.65;
 }
 
-.notes-preview {
-  flex: 1;
+.reader-notes-textarea::placeholder {
+  color: var(--text-dimmed);
+  font-style: italic;
+  font-size: 0.82rem;
+  opacity: 0.75;
+}
+
+/* Scrollbar Personalizado Elegante para Textarea y Previa */
+.reader-notes-textarea::-webkit-scrollbar,
+.reader-notes-preview::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.reader-notes-textarea::-webkit-scrollbar-track,
+.reader-notes-preview::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reader-notes-textarea::-webkit-scrollbar-thumb,
+.reader-notes-preview::-webkit-scrollbar-thumb {
+  background-color: var(--border-subtle);
+  border-radius: var(--radius-full);
+}
+
+.reader-notes-textarea::-webkit-scrollbar-thumb:hover,
+.reader-notes-preview::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary);
+}
+
+.reader-notes-textarea::-webkit-scrollbar-button,
+.reader-notes-preview::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Vista Previa Renderizada Obsidian */
+.reader-notes-preview {
   width: 100%;
-  padding: 18px;
-  background: var(--bg-surface);
-  color: var(--text-main);
-  line-height: 1.6;
+  height: 100%;
+  padding: 14px 16px 30px;
+  box-sizing: border-box;
   overflow-y: auto;
+  overflow-x: hidden;
+  color: var(--text-main);
+  font-family: var(--font-family);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  word-break: break-word;
 }
 
-/* Renderizado Markdown en la Vista Previa */
-.markdown-rendered h1 {
-  font-size: 1.45rem;
+/* Tipografía y Elementos de Markdown Obsidian */
+.obsidian-h1 {
+  font-size: 1.32rem;
   font-weight: 700;
-  margin-top: 8px;
-  margin-bottom: 8px;
   color: var(--primary);
-  border-bottom: 1px solid var(--border-subtle);
+  margin: 14px 0 8px;
   padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-subtle);
+  line-height: 1.3;
+}
+.obsidian-h1:first-child {
+  margin-top: 2px;
 }
 
-.markdown-rendered h2 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-top: 14px;
-  margin-bottom: 6px;
-  color: var(--text-main);
+.obsidian-h2 {
+  font-size: 1.15rem;
+  font-weight: 650;
+  color: #38BDF8;
+  margin: 12px 0 6px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--border-subtle);
+  line-height: 1.35;
 }
 
-.markdown-rendered h3 {
-  font-size: 1.1rem;
+.obsidian-h3 {
+  font-size: 1.02rem;
   font-weight: 600;
-  margin-top: 12px;
-  margin-bottom: 6px;
-  color: var(--text-main);
+  color: #FBBF24;
+  margin: 10px 0 5px;
+  line-height: 1.4;
 }
 
-.markdown-rendered p {
-  margin-bottom: 10px;
+.obsidian-h4, .obsidian-h5, .obsidian-h6 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #C084FC;
+  margin: 8px 0 4px;
 }
 
-.markdown-rendered blockquote {
-  border-left: 3px solid var(--primary);
-  padding: 6px 12px;
-  margin: 10px 0;
-  background: var(--primary-subtle);
+.reader-notes-preview strong {
   color: var(--text-main);
-  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+  font-weight: 700;
+}
+
+.reader-notes-preview em {
+  color: var(--text-main);
   font-style: italic;
 }
 
-.markdown-rendered ul {
-  padding-left: 20px;
-  margin-bottom: 10px;
+.reader-notes-preview del {
+  color: var(--text-muted);
+  text-decoration: line-through;
 }
 
-.markdown-rendered li {
-  margin-bottom: 4px;
+/* Resaltado Amarillo Obsidian Trademark ==texto== */
+.obsidian-highlight {
+  background-color: rgba(250, 204, 21, 0.25);
+  color: #ca8a04;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  font-weight: 600;
 }
 
-.markdown-rendered hr {
-  border: none;
-  border-top: 1px dashed var(--border-subtle);
-  margin: 14px 0;
+[data-theme="obsidian"] .obsidian-highlight,
+[data-theme="emerald"] .obsidian-highlight,
+[data-theme="frost"] .obsidian-highlight,
+[data-theme="amber"] .obsidian-highlight,
+[data-theme="rose"] .obsidian-highlight {
+  color: #FDE047;
 }
 
-.markdown-rendered a {
-  color: var(--primary);
-  text-decoration: underline;
-}
-
-.notes-inline-code {
-  background: var(--bg-surface-elevated);
+.obsidian-inline-code {
+  background-color: var(--bg-surface-elevated);
+  color: #FB7185;
   padding: 2px 6px;
-  border-radius: var(--radius-xs);
-  font-family: 'JetBrains Mono', monospace;
+  border-radius: 4px;
+  font-family: var(--font-mono);
   font-size: 0.85em;
-  color: var(--primary);
   border: 1px solid var(--border-subtle);
 }
 
-.notes-code-block {
-  background: var(--bg-input);
+.obsidian-code-block {
+  background-color: var(--bg-input);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  overflow-x: auto;
+  border-radius: 6px;
+  padding: 10px 12px;
   margin: 10px 0;
-  font-family: 'JetBrains Mono', monospace;
+  overflow-x: auto;
+  font-family: var(--font-mono);
   font-size: 0.82rem;
-  line-height: 1.45;
+  color: var(--text-main);
+  line-height: 1.48;
+}
+
+.obsidian-quote {
+  margin: 10px 0;
+  padding: 8px 14px;
+  border-left: 3px solid var(--primary);
+  background-color: var(--primary-subtle);
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
   color: var(--text-main);
 }
 
-/* Pie del Drawer */
-.notes-footer {
-  padding: 12px 16px;
-  border-top: 1px solid var(--border-subtle);
-  background: var(--bg-surface);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  flex-shrink: 0;
-  position: relative;
+.obsidian-ul {
+  margin: 8px 0 8px 18px;
+  list-style-type: disc;
 }
 
-#notesFileInput {
+.obsidian-ol {
+  margin: 8px 0 8px 18px;
+  list-style-type: decimal;
+}
+
+.reader-notes-preview li {
+  margin: 3px 0;
+  line-height: 1.55;
+}
+
+/* Listas de Tareas Interactivas Obsidian */
+.obsidian-task-list {
+  list-style: none;
+  margin: 8px 0;
+  padding-left: 2px;
+}
+
+.obsidian-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.obsidian-task-checkbox {
+  width: 15px;
+  height: 15px;
+  margin-top: 3px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.obsidian-task-item.completed span {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+.obsidian-wikilink {
+  color: #A78BFA;
+  background-color: rgba(167, 139, 250, 0.12);
+  padding: 1px 5px;
+  border-radius: 4px;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.obsidian-link {
+  color: #38BDF8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.obsidian-hr {
+  border: none;
+  height: 1px;
+  background-color: var(--border-subtle);
+  margin: 14px 0;
+}
+
+.obsidian-spacing {
+  height: 8px;
+}
+
+.obsidian-p {
+  margin: 4px 0;
+  line-height: 1.6;
+}
+
+.obsidian-empty-preview {
+  text-align: center;
+  padding: 40px 15px;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* Pie del Drawer con Estadísticas */
+.notes-drawer-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 18px;
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+#notesFileInput,
+#notes-file-input {
   display: none !important;
 }
 

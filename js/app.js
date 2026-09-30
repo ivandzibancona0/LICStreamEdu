@@ -994,6 +994,7 @@ function setupAppEvents() {
     const newTitle = inputCourseTitle?.value?.trim();
     if (newTitle) {
       courseManager.updateCourseTitle(newTitle);
+      NotesManager.updateCourseSubtitle?.();
       ModalController.close('modalEditCourseTitle');
       showToast(`Curso renombrado a "${newTitle}"`, 'success');
     }

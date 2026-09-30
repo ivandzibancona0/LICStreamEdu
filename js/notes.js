@@ -1,10 +1,17 @@
 /**
  * notes.js - LICStreamEdu
- * Módulo para la Libreta de Apuntes integrada (Notes Drawer).
- * Permite tomar apuntes enriquecidos en Markdown, cambiar tipografías
- * (incluyendo estilo mano alzada), colores, tamaños, formatear texto,
- * anexar archivos .md/.txt, descargar con nombre personalizado y
- * guardar automáticamente en el archivo JSON del curso y localStorage.
+ * Módulo para la Libreta de Apuntes integrada estilo Obsidian.
+ * Réplica fiel adaptada del motor de notas de LICBook:
+ * - Soporte Markdown Obsidian de alta fidelidad (H1-H6, **bold**, *italic*, ~~strike~~, ==highlight==, etc.)
+ * - Listas de tareas interactivas (- [ ] / - [x]) sincronizadas bidireccionalmente
+ * - Atajos de teclado: Ctrl+B, Ctrl+I, Ctrl+Shift+H (resaltar), Ctrl+Shift+S (tachar)
+ * - Indentación inteligente con Tab / Shift+Tab (2 espacios)
+ * - Autocontinuación de listas y tareas al presionar Enter
+ * - Barra de herramientas con envoltura y desenvoltura inteligente
+ * - Descarga .md con selector de explorador de archivos nativo y respaldo Blob
+ * - Anexión de archivos .md y .txt
+ * - Contador de estadísticas (caracteres y palabras) en tiempo real
+ * - Autoguardado debounced sincronizado con courseManager y localStorage
  */
 
 const NotesManager = {
@@ -14,29 +21,37 @@ const NotesManager = {
   textarea: null,
   preview: null,
   saveStatus: null,
-  fontSelect: null,
-  fontSizeSelect: null,
-  colorInput: null,
-  colorSwatch: null,
+  titleEl: null,
   fileInput: null,
-  currentView: 'editor', // 'editor' | 'preview'
+  btnDownload: null,
+  btnAppend: null,
+  btnTabEdit: null,
+  btnTabPreview: null,
+  formattingTools: null,
+  charCountEl: null,
+  wordCountEl: null,
+  currentView: 'edit', // 'edit' | 'preview'
   saveTimeout: null,
 
   /**
    * Inicializa la libreta de apuntes y asocia eventos
    */
   init() {
-    this.drawer = document.getElementById('notesDrawer');
-    this.trigger = document.getElementById('notesDrawerTrigger');
+    this.drawer = document.getElementById('reader-notes-drawer') || document.getElementById('notesDrawer');
+    this.trigger = document.getElementById('notesDrawerTrigger') || document.getElementById('btn-reader-notes-tab');
     this.backdrop = document.getElementById('notesDrawerBackdrop');
-    this.textarea = document.getElementById('notesTextarea');
-    this.preview = document.getElementById('notesPreviewContainer');
-    this.saveStatus = document.getElementById('notesSaveStatus');
-    this.fontSelect = document.getElementById('notesFontSelect');
-    this.fontSizeSelect = document.getElementById('notesFontSizeSelect');
-    this.colorInput = document.getElementById('notesColorInput');
-    this.colorSwatch = document.getElementById('notesColorPreviewSwatch');
-    this.fileInput = document.getElementById('notesFileInput');
+    this.textarea = document.getElementById('reader-notes-textarea') || document.getElementById('notesTextarea');
+    this.preview = document.getElementById('reader-notes-preview') || document.getElementById('notesPreviewContainer');
+    this.saveStatus = document.getElementById('notes-save-status') || document.getElementById('notesSaveStatus');
+    this.titleEl = document.getElementById('notes-book-title') || document.getElementById('notesDrawerSubtitle');
+    this.fileInput = document.getElementById('notes-file-input') || document.getElementById('notesFileInput');
+    this.btnDownload = document.getElementById('btn-download-notes') || document.getElementById('btnDownloadNotes');
+    this.btnAppend = document.getElementById('btn-append-notes') || document.getElementById('btnAppendNotesFile');
+    this.btnTabEdit = document.getElementById('btn-notes-tab-edit') || document.getElementById('btnNotesViewEditor');
+    this.btnTabPreview = document.getElementById('btn-notes-tab-preview') || document.getElementById('btnNotesViewPreview');
+    this.formattingTools = document.getElementById('notes-formatting-tools') || document.getElementById('notes-markdown-toolbar');
+    this.charCountEl = document.getElementById('notes-char-count') || document.getElementById('notesCharCount');
+    this.wordCountEl = document.getElementById('notes-word-count') || document.getElementById('notesWordCount');
 
     if (!this.drawer || !this.textarea) return;
 
@@ -44,7 +59,9 @@ const NotesManager = {
     this.setupToolbarEvents();
     this.setupEditorEvents();
     this.setupFileEvents();
-    this.loadInitialPreferences();
+    this.setupPreviewEvents();
+    this.updateCourseSubtitle();
+    this.updateNotesStats();
   },
 
   /**
@@ -55,6 +72,11 @@ const NotesManager = {
     if (this.textarea) {
       this.textarea.value = initialText || '';
       this.updateSaveIndicator('saved');
+      this.updateCourseSubtitle();
+      this.updateNotesStats();
+      if (this.currentView === 'preview') {
+        this.renderNotesPreview();
+      }
     }
   },
 
@@ -63,16 +85,18 @@ const NotesManager = {
    */
   setupDrawerEvents() {
     // Abrir o alternar al hacer clic en la pestaña flotante lateral
-    this.trigger?.addEventListener('click', () => {
+    this.trigger?.addEventListener('click', (e) => {
+      e.stopPropagation();
       this.toggle();
     });
 
     // Botón de cierre superior
-    document.getElementById('btnCloseNotesDrawer')?.addEventListener('click', () => {
+    const btnClose = document.getElementById('btn-close-notes') || document.getElementById('btnCloseNotesDrawer');
+    btnClose?.addEventListener('click', () => {
       this.close();
     });
 
-    // Cerrar al hacer clic en el backdrop oscurecido
+    // Cerrar al hacer clic en el backdrop
     this.backdrop?.addEventListener('click', () => {
       this.close();
     });
@@ -83,19 +107,10 @@ const NotesManager = {
         this.close();
       }
     });
-
-    // Alternar entre modo Editor y Vista Previa
-    document.getElementById('btnNotesViewEditor')?.addEventListener('click', () => {
-      this.setView('editor');
-    });
-
-    document.getElementById('btnNotesViewPreview')?.addEventListener('click', () => {
-      this.setView('preview');
-    });
   },
 
   /**
-   * Abre el Drawer con animación suave de derecha a izquierda
+   * Abre el Drawer con animación suave
    */
   open() {
     if (!this.drawer) return;
@@ -104,7 +119,7 @@ const NotesManager = {
     this.backdrop?.classList.add('open');
     this.trigger?.classList.add('active');
 
-    // Cargar notas actuales del curso
+    // Cargar notas actuales del curso si el textarea está vacío
     if (typeof courseManager !== 'undefined') {
       const currentNotes = courseManager.getNotes ? courseManager.getNotes() : (courseManager.course?.notes || '');
       if (this.textarea && !this.textarea.value && currentNotes) {
@@ -112,16 +127,19 @@ const NotesManager = {
       }
     }
 
+    this.updateCourseSubtitle();
+    this.updateNotesStats();
+
     // Foco en el editor si está en modo edición
-    if (this.currentView === 'editor') {
-      setTimeout(() => this.textarea?.focus(), 300);
+    if (this.currentView === 'edit') {
+      setTimeout(() => this.textarea?.focus(), 250);
     } else {
-      this.renderPreview();
+      this.renderNotesPreview();
     }
   },
 
   /**
-   * Cierra el Drawer con animación suave de izquierda a derecha
+   * Cierra el Drawer
    */
   close() {
     if (!this.drawer) return;
@@ -150,230 +168,554 @@ const NotesManager = {
   },
 
   /**
-   * Cambia el modo de visualización: 'editor' o 'preview'
+   * Cambia el modo de visualización: 'edit' o 'preview'
    */
-  setView(view) {
-    this.currentView = view;
-    const btnEditor = document.getElementById('btnNotesViewEditor');
-    const btnPreview = document.getElementById('btnNotesViewPreview');
+  setNotesViewMode(mode) {
+    this.currentView = mode;
 
-    if (view === 'preview') {
-      btnEditor?.classList.remove('active');
-      btnPreview?.classList.add('active');
-      this.textarea?.classList.add('hidden');
-      this.preview?.classList.remove('hidden');
-      this.renderPreview();
+    if (mode === 'preview') {
+      this.btnTabEdit?.classList.remove('active');
+      this.btnTabPreview?.classList.add('active');
+      if (this.textarea) this.textarea.style.display = 'none';
+      if (this.preview) this.preview.style.display = 'block';
+      this.formattingTools?.classList.add('disabled');
+      this.renderNotesPreview();
     } else {
-      btnPreview?.classList.remove('active');
-      btnEditor?.classList.add('active');
-      this.preview?.classList.add('hidden');
-      this.textarea?.classList.remove('hidden');
+      this.btnTabPreview?.classList.remove('active');
+      this.btnTabEdit?.classList.add('active');
+      if (this.preview) this.preview.style.display = 'none';
+      if (this.textarea) this.textarea.style.display = 'block';
+      this.formattingTools?.classList.remove('disabled');
       this.textarea?.focus();
     }
   },
 
   /**
-   * Renderiza el Markdown en la vista previa
+   * Alias de compatibilidad para setNotesViewMode
    */
-  renderPreview() {
-    if (!this.preview || !this.textarea) return;
-    const rawText = this.textarea.value.trim();
-    if (!rawText) {
-      this.preview.innerHTML = `
-        <div class="empty-list-notice" style="padding: 30px 10px;">
-          <p>No hay contenido escrito en la libreta todavía. Cambia al modo <strong>Editor</strong> para empezar a tomar apuntes.</p>
-        </div>
-      `;
-      return;
-    }
-    this.preview.innerHTML = this.parseMarkdown(rawText);
+  setView(view) {
+    const mode = (view === 'preview') ? 'preview' : 'edit';
+    this.setNotesViewMode(mode);
   },
 
   /**
-   * Configura eventos de la barra de herramientas de formato
+   * Configura eventos de la barra de herramientas y botones de formato
    */
   setupToolbarEvents() {
-    // 1. Selector de Fuentes (5 familias tipográficas)
-    this.fontSelect?.addEventListener('change', (e) => {
-      const selectedFont = e.target.value;
-      this.applyFontFamily(selectedFont);
-      LocalStorageManager.set('notes_pref_font', selectedFont);
+    // Pestaña Editar
+    this.btnTabEdit?.addEventListener('click', () => {
+      this.setNotesViewMode('edit');
     });
 
-    // 2. Selector de Tamaño de Fuente
-    this.fontSizeSelect?.addEventListener('change', (e) => {
-      const selectedSize = e.target.value;
-      this.applyFontSize(selectedSize);
-      LocalStorageManager.set('notes_pref_size', selectedSize);
+    // Pestaña Previa
+    this.btnTabPreview?.addEventListener('click', () => {
+      this.setNotesViewMode('preview');
     });
 
-    // 3. Selector de Color de Texto
-    this.colorInput?.addEventListener('input', (e) => {
-      const color = e.target.value;
-      if (this.colorSwatch) {
-        this.colorSwatch.style.backgroundColor = color;
-      }
-      this.applyTextColor(color);
-    });
+    // Botones de la barra de formato (delegación de clics)
+    if (this.formattingTools) {
+      this.formattingTools.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-tool') || e.target.closest('.notes-tool-btn');
+        if (!btn) return;
+        const action = btn.dataset.action || btn.dataset.tool;
+        if (!action) return;
 
-    // 4. Botones rápidos de formato Markdown
-    document.querySelectorAll('.notes-tool-btn[data-tool]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tool = btn.getAttribute('data-tool');
-        this.applyFormatTool(tool);
+        // Pasar primero al modo edición para ver el cambio
+        this.setNotesViewMode('edit');
+        this.applyMarkdownFormat(action);
       });
-    });
-  },
-
-  /**
-   * Aplica la clase de tipografía a textarea y preview
-   */
-  applyFontFamily(fontClass) {
-    const fonts = ['font-architects', 'font-jakarta', 'font-merriweather', 'font-jetbrains', 'font-patrick'];
-    fonts.forEach(f => {
-      this.textarea?.classList.remove(f);
-      this.preview?.classList.remove(f);
-    });
-    this.textarea?.classList.add(fontClass);
-    this.preview?.classList.add(fontClass);
-    if (this.fontSelect) this.fontSelect.value = fontClass;
-  },
-
-  /**
-   * Aplica el tamaño de texto
-   */
-  applyFontSize(size) {
-    if (this.textarea) this.textarea.style.fontSize = size;
-    if (this.preview) this.preview.style.fontSize = size;
-    if (this.fontSizeSelect) this.fontSizeSelect.value = size;
-  },
-
-  /**
-   * Aplica color al texto seleccionado insertando etiquetas span
-   */
-  applyTextColor(color) {
-    if (!this.textarea) return;
-
-    const start = this.textarea.selectionStart;
-    const end = this.textarea.selectionEnd;
-    const selected = this.textarea.value.substring(start, end);
-
-    if (selected) {
-      const replacement = `<span style="color: ${color};">${selected}</span>`;
-      this.insertTextAtSelection(replacement, start, start + replacement.length);
-    } else {
-      // Si no hay selección, insertar ejemplo
-      const replacement = `<span style="color: ${color};">texto resaltado</span>`;
-      this.insertTextAtSelection(replacement, start, start + replacement.length);
     }
   },
 
   /**
-   * Aplica herramientas de formato Markdown
+   * Aplica formato Markdown con envoltura y desenvoltura inteligente (LICBook Engine)
+   */
+  applyMarkdownFormat(action) {
+    if (!this.textarea) return;
+
+    const start = this.textarea.selectionStart;
+    const end = this.textarea.selectionEnd;
+    const text = this.textarea.value;
+    const hasSelection = start !== end;
+    const selectedText = hasSelection ? text.substring(start, end) : '';
+
+    // Normalizar nombres de herramientas
+    const actionMap = {
+      'bold': 'bold',
+      'italic': 'italic',
+      'strike': 'strike',
+      'highlight': 'highlight',
+      'code': 'code',
+      'h1': 'h1',
+      'h2': 'h2',
+      'h3': 'h3',
+      'quote': 'quote',
+      'list': 'bullet-list',
+      'bullet-list': 'bullet-list',
+      'task-list': 'task-list',
+      'hr': 'hr'
+    };
+    const act = actionMap[action] || action;
+
+    // 1. Formatos de envoltura inline
+    const inlineFormats = {
+      bold: { prefix: '**', suffix: '**', defaultText: 'texto en negrita' },
+      italic: { prefix: '*', suffix: '*', defaultText: 'texto en cursiva' },
+      strike: { prefix: '~~', suffix: '~~', defaultText: 'texto tachado' },
+      highlight: { prefix: '==', suffix: '==', defaultText: 'texto resaltado' },
+      code: { prefix: '`', suffix: '`', defaultText: 'código' }
+    };
+
+    if (inlineFormats[act]) {
+      const { prefix, suffix, defaultText } = inlineFormats[act];
+      if (hasSelection) {
+        if (selectedText.startsWith(prefix) && selectedText.endsWith(suffix) && selectedText.length >= prefix.length + suffix.length) {
+          // Desenvolver (quitar formato)
+          const unwrapped = selectedText.slice(prefix.length, -suffix.length);
+          this.textarea.value = text.substring(0, start) + unwrapped + text.substring(end);
+          this.textarea.setSelectionRange(start, start + unwrapped.length);
+        } else {
+          // Envolver
+          const wrapped = prefix + selectedText + suffix;
+          this.textarea.value = text.substring(0, start) + wrapped + text.substring(end);
+          this.textarea.setSelectionRange(start, start + wrapped.length);
+        }
+      } else {
+        const insertion = prefix + defaultText + suffix;
+        this.textarea.value = text.substring(0, start) + insertion + text.substring(end);
+        this.textarea.setSelectionRange(start + prefix.length, start + prefix.length + defaultText.length);
+      }
+      this.textarea.focus();
+      this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
+
+    // 2. Formatos de prefijo de línea (H1, H2, H3, cita, viñetas, tareas)
+    const linePrefixes = {
+      h1: '# ',
+      h2: '## ',
+      h3: '### ',
+      quote: '> ',
+      'bullet-list': '- ',
+      'task-list': '- [ ] '
+    };
+
+    if (linePrefixes[act]) {
+      const prefix = linePrefixes[act];
+      const startOfLine = text.lastIndexOf('\n', start - 1) + 1;
+      let endOfLine = text.indexOf('\n', end);
+      if (endOfLine === -1) endOfLine = text.length;
+
+      const lines = text.substring(startOfLine, endOfLine).split('\n');
+
+      const formatted = lines.map(line => {
+        if (prefix.startsWith('#')) {
+          const clean = line.replace(/^#{1,6}\s*/, '');
+          const fallback = act === 'h1' ? 'Título Principal' : act === 'h2' ? 'Subtítulo' : 'Sección';
+          return prefix + (clean || fallback);
+        }
+        if (prefix === '- [ ] ') {
+          if (line.match(/^[-*+]\s+\[[ xX]\]\s+/)) {
+            return line.replace(/^[-*+]\s+\[[ xX]\]\s+/, '');
+          }
+          const clean = line.replace(/^(\s*[-*+]|\s*\d+\.)\s*/, '');
+          return prefix + clean;
+        }
+        if (prefix === '- ') {
+          if (line.startsWith('- ')) return line.substring(2);
+          return prefix + line.replace(/^[-*+]\s+/, '');
+        }
+        if (prefix === '> ') {
+          if (line.startsWith('> ')) return line.substring(2);
+          return prefix + line;
+        }
+        return prefix + line;
+      });
+
+      const replacement = formatted.join('\n');
+      this.textarea.value = text.substring(0, startOfLine) + replacement + text.substring(endOfLine);
+      this.textarea.setSelectionRange(startOfLine, startOfLine + replacement.length);
+      this.textarea.focus();
+      this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
+
+    // 3. Separador horizontal
+    if (act === 'hr') {
+      const insertion = '\n\n---\n\n';
+      this.textarea.value = text.substring(0, start) + insertion + text.substring(end);
+      const newPos = start + insertion.length;
+      this.textarea.setSelectionRange(newPos, newPos);
+      this.textarea.focus();
+      this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
+  },
+
+  /**
+   * Alias de compatibilidad para applyMarkdownFormat
    */
   applyFormatTool(tool) {
-    if (!this.textarea) return;
-
-    // Si estamos en preview, cambiar a editor para formatear
-    if (this.currentView === 'preview') {
-      this.setView('editor');
-    }
-
-    const start = this.textarea.selectionStart;
-    const end = this.textarea.selectionEnd;
-    const selected = this.textarea.value.substring(start, end);
-
-    let before = '';
-    let after = '';
-    let defaultVal = 'texto';
-
-    switch (tool) {
-      case 'h1':
-        before = '\n# ';
-        after = '\n';
-        defaultVal = 'Encabezado 1';
-        break;
-      case 'h2':
-        before = '\n## ';
-        after = '\n';
-        defaultVal = 'Encabezado 2';
-        break;
-      case 'h3':
-        before = '\n### ';
-        after = '\n';
-        defaultVal = 'Encabezado 3';
-        break;
-      case 'bold':
-        before = '**';
-        after = '**';
-        defaultVal = 'texto en negrita';
-        break;
-      case 'italic':
-        before = '*';
-        after = '*';
-        defaultVal = 'texto en cursiva';
-        break;
-      case 'list':
-        before = '\n- ';
-        after = '\n';
-        defaultVal = 'Elemento de lista';
-        break;
-      case 'quote':
-        before = '\n> ';
-        after = '\n';
-        defaultVal = 'Nota o cita destacada';
-        break;
-      case 'code':
-        before = '`';
-        after = '`';
-        defaultVal = 'código';
-        break;
-    }
-
-    const content = selected || defaultVal;
-    const replacement = before + content + after;
-    this.insertTextAtSelection(replacement, start + before.length, start + before.length + content.length);
+    this.applyMarkdownFormat(tool);
   },
 
   /**
-   * Inserta texto en la posición del cursor de la textarea
-   */
-  insertTextAtSelection(text, selectStart, selectEnd) {
-    const start = this.textarea.selectionStart;
-    const end = this.textarea.selectionEnd;
-    const val = this.textarea.value;
-
-    this.textarea.value = val.substring(0, start) + text + val.substring(end);
-    this.textarea.focus();
-    this.textarea.setSelectionRange(selectStart || start + text.length, selectEnd || start + text.length);
-
-    // Disparar evento input para guardar automáticamente
-    this.triggerAutoSave();
-  },
-
-  /**
-   * Configura eventos de edición y guardado automático con debounce
+   * Eventos del editor: guardado automático y atajos de teclado avanzados
    */
   setupEditorEvents() {
-    this.textarea?.addEventListener('input', () => {
-      this.triggerAutoSave();
+    if (!this.textarea) return;
+
+    // 1. Guardado automático con debounce y estadísticas
+    this.textarea.addEventListener('input', () => {
+      this.updateNotesStats();
+      this.updateSaveIndicator('saving');
+
+      clearTimeout(this.saveTimeout);
+      this.saveTimeout = setTimeout(() => {
+        const text = this.textarea.value;
+        if (typeof courseManager !== 'undefined') {
+          courseManager.setNotes(text);
+        }
+        if (typeof LocalStorageManager !== 'undefined') {
+          LocalStorageManager.set('lic_notes_current', text);
+        }
+        this.updateSaveIndicator('saved');
+      }, 400);
+    });
+
+    // 2. Atajos de teclado avanzados (LICBook)
+    this.textarea.addEventListener('keydown', (e) => {
+      // Ctrl+B / Cmd+B -> Negrita
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'b' || e.key === 'B')) {
+        e.preventDefault();
+        this.applyMarkdownFormat('bold');
+        return;
+      }
+
+      // Ctrl+I / Cmd+I -> Cursiva
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'i' || e.key === 'I')) {
+        e.preventDefault();
+        this.applyMarkdownFormat('italic');
+        return;
+      }
+
+      // Ctrl+Shift+H -> Resaltado Obsidian
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'h' || e.key === 'H')) {
+        e.preventDefault();
+        this.applyMarkdownFormat('highlight');
+        return;
+      }
+
+      // Ctrl+Shift+S -> Tachado
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        this.applyMarkdownFormat('strike');
+        return;
+      }
+
+      // Tab -> Indentación de 2 espacios
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = this.textarea.selectionStart;
+        const end = this.textarea.selectionEnd;
+        if (e.shiftKey) {
+          const lineStart = this.textarea.value.lastIndexOf('\n', start - 1) + 1;
+          const line = this.textarea.value.substring(lineStart, end);
+          if (line.startsWith('  ')) {
+            this.textarea.value = this.textarea.value.substring(0, lineStart) + line.substring(2) + this.textarea.value.substring(end);
+            this.textarea.setSelectionRange(Math.max(lineStart, start - 2), Math.max(lineStart, end - 2));
+          }
+        } else {
+          this.textarea.value = this.textarea.value.substring(0, start) + '  ' + this.textarea.value.substring(end);
+          this.textarea.setSelectionRange(start + 2, start + 2);
+        }
+        this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
+
+      // Enter -> Autocontinuación de listas y tareas
+      if (e.key === 'Enter') {
+        const start = this.textarea.selectionStart;
+        const lineStart = this.textarea.value.lastIndexOf('\n', start - 1) + 1;
+        const currentLine = this.textarea.value.substring(lineStart, start);
+
+        // Ítem de tarea: - [ ] o - [x]
+        const taskMatch = currentLine.match(/^(\s*[-*+]\s+\[[ xX]\]\s+)(.*)$/);
+        if (taskMatch) {
+          e.preventDefault();
+          if (!taskMatch[2].trim()) {
+            this.textarea.value = this.textarea.value.substring(0, lineStart) + this.textarea.value.substring(start);
+            this.textarea.setSelectionRange(lineStart, lineStart);
+          } else {
+            const prefix = currentLine.match(/^\s*[-*+]\s+/)[0] + '[ ] ';
+            this.textarea.value = this.textarea.value.substring(0, start) + '\n' + prefix + this.textarea.value.substring(start);
+            this.textarea.setSelectionRange(start + 1 + prefix.length, start + 1 + prefix.length);
+          }
+          this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+          return;
+        }
+
+        // Ítem de viñeta: - o *
+        const bulletMatch = currentLine.match(/^(\s*[-*+]\s+)(.*)$/);
+        if (bulletMatch) {
+          e.preventDefault();
+          if (!bulletMatch[2].trim()) {
+            this.textarea.value = this.textarea.value.substring(0, lineStart) + this.textarea.value.substring(start);
+            this.textarea.setSelectionRange(lineStart, lineStart);
+          } else {
+            const prefix = bulletMatch[1];
+            this.textarea.value = this.textarea.value.substring(0, start) + '\n' + prefix + this.textarea.value.substring(start);
+            this.textarea.setSelectionRange(start + 1 + prefix.length, start + 1 + prefix.length);
+          }
+          this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+          return;
+        }
+      }
     });
   },
 
   /**
-   * Dispara el guardado automático con debounce
+   * Eventos de la vista previa: interactividad en casillas de verificación
    */
-  triggerAutoSave() {
-    this.updateSaveIndicator('saving');
+  setupPreviewEvents() {
+    if (!this.preview) return;
 
-    clearTimeout(this.saveTimeout);
-    this.saveTimeout = setTimeout(() => {
-      const text = this.textarea.value;
-      if (typeof courseManager !== 'undefined') {
-        courseManager.setNotes(text);
+    this.preview.addEventListener('change', (e) => {
+      if (e.target.classList.contains('obsidian-task-checkbox')) {
+        const taskItem = e.target.closest('.obsidian-task-item');
+        if (!taskItem || !this.textarea) return;
+        const lineIdx = parseInt(taskItem.dataset.lineIndex, 10);
+        const isChecked = e.target.checked;
+
+        const lines = this.textarea.value.split('\n');
+        if (lines[lineIdx] !== undefined) {
+          if (isChecked) {
+            lines[lineIdx] = lines[lineIdx].replace(/^(\s*[-*+]\s+\[)\s*(\])/, '$1x$2');
+          } else {
+            lines[lineIdx] = lines[lineIdx].replace(/^(\s*[-*+]\s+\[)[xX](\])/, '$1 $2');
+          }
+          this.textarea.value = lines.join('\n');
+          taskItem.classList.toggle('completed', isChecked);
+
+          if (typeof courseManager !== 'undefined') {
+            courseManager.setNotes(this.textarea.value);
+          }
+          this.updateNotesStats();
+          this.updateSaveIndicator('saved');
+        }
       }
-      this.updateSaveIndicator('saved');
-    }, 400);
+    });
+  },
+
+  /**
+   * Renderiza la vista previa usando el parser Obsidian
+   */
+  renderNotesPreview() {
+    if (!this.preview || !this.textarea) return;
+    const rawText = this.textarea.value;
+    this.preview.innerHTML = this.parseObsidianMarkdown(rawText);
+  },
+
+  /**
+   * Parser nativo y fiel de Markdown estilo Obsidian (LICBook Engine)
+   * Soporta: H1-H6, **negrita**, *cursiva*, ~~tachado~~, ==resaltado==, listas, tareas interactivas,
+   * citas en bloque, bloques de código, código inline, enlaces, wikilinks y reglas horizontales.
+   * @param {string} markdown 
+   * @returns {string}
+   */
+  parseObsidianMarkdown(markdown) {
+    if (!markdown || !markdown.trim()) {
+      return `
+        <div class="obsidian-empty-preview">
+          <p style="font-size: 1.1rem; margin-bottom: 6px; font-weight: 600;">📓 Libreta sin notas</p>
+          <p style="font-size: 0.82rem; opacity: 0.8;">Escribe tus apuntes en la pestaña <strong>Editar</strong> con formato Markdown tipo Obsidian.</p>
+        </div>
+      `;
+    }
+
+    const escapeHtml = (str) => {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    };
+
+    // 1. Proteger bloques de código
+    const codeBlocks = [];
+    let processed = markdown.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+      const idx = codeBlocks.length;
+      codeBlocks.push(`<pre class="obsidian-code-block"><code class="language-${escapeHtml(lang || 'text')}">${escapeHtml(code.trim())}</code></pre>`);
+      return `§CODEBLOCK${idx}§`;
+    });
+
+    // 2. Proteger código inline
+    const inlineCodes = [];
+    processed = processed.replace(/`([^`\n]+)`/g, (match, code) => {
+      const idx = inlineCodes.length;
+      inlineCodes.push(`<code class="obsidian-inline-code">${escapeHtml(code)}</code>`);
+      return `§INLINECODE${idx}§`;
+    });
+
+    // Helper para formato inline
+    const parseInline = (str) => {
+      let s = escapeHtml(str);
+      // Obsidian Highlight: ==texto==
+      s = s.replace(/==(.*?)==/g, '<mark class="obsidian-highlight">$1</mark>');
+      // Negrita + Cursiva: ***texto***
+      s = s.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+      // Negrita: **texto** o __texto__
+      s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/__(.*?)__/g, '<strong>$1</strong>');
+      // Cursiva: *texto* o _texto_
+      s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      s = s.replace(/_([^_]+)_/g, '<em>$1</em>');
+      // Tachado: ~~texto~~
+      s = s.replace(/~~(.*?)~~/g, '<del>$1</del>');
+      // Obsidian Wikilink: [[página]]
+      s = s.replace(/\[\[(.*?)\]\]/g, '<span class="obsidian-wikilink">[[ $1 ]]</span>');
+      // Enlace estándar: [texto](url)
+      s = s.replace(/\[(.*?)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="obsidian-link">$1</a>');
+      return s;
+    };
+
+    const lines = processed.split('\n');
+    const output = [];
+    let inList = null;
+    let inBlockquote = false;
+    let blockquoteBuffer = [];
+
+    const flushList = () => {
+      if (inList) {
+        if (inList === 'task') output.push('</ul>');
+        else output.push(`</${inList}>`);
+        inList = null;
+      }
+    };
+
+    const flushBlockquote = () => {
+      if (inBlockquote) {
+        const content = blockquoteBuffer.map(b => parseInline(b)).join('<br>');
+        output.push(`<blockquote class="obsidian-quote">${content}</blockquote>`);
+        inBlockquote = false;
+        blockquoteBuffer = [];
+      }
+    };
+
+    lines.forEach((line, lineIdx) => {
+      // Bloque de código protegido
+      const cbMatch = line.trim().match(/^§CODEBLOCK(\d+)§$/);
+      if (cbMatch) {
+        flushList();
+        flushBlockquote();
+        const idx = parseInt(cbMatch[1], 10);
+        output.push(codeBlocks[idx]);
+        return;
+      }
+
+      // Citas en bloque: > texto
+      const bqMatch = line.match(/^>\s?(.*)$/);
+      if (bqMatch) {
+        flushList();
+        inBlockquote = true;
+        blockquoteBuffer.push(bqMatch[1]);
+        return;
+      } else {
+        flushBlockquote();
+      }
+
+      // Regla horizontal: --- o *** o ___
+      if (/^(?:---|\*\*\*|___)\s*$/.test(line)) {
+        flushList();
+        output.push('<hr class="obsidian-hr">');
+        return;
+      }
+
+      // Encabezados: # H1 a ###### H6
+      const hMatch = line.match(/^(#{1,6})\s+(.*)$/);
+      if (hMatch) {
+        flushList();
+        const level = hMatch[1].length;
+        const text = parseInline(hMatch[2]);
+        output.push(`<h${level} class="obsidian-h${level}">${text}</h${level}>`);
+        return;
+      }
+
+      // Lista de tareas interactivas: - [ ] o - [x]
+      const taskMatch = line.match(/^[-*+]\s+\[([ xX])\]\s+(.*)$/);
+      if (taskMatch) {
+        if (inList !== 'task') {
+          flushList();
+          output.push('<ul class="obsidian-task-list">');
+          inList = 'task';
+        }
+        const isChecked = taskMatch[1].toLowerCase() === 'x';
+        const text = parseInline(taskMatch[2]);
+        output.push(`<li class="obsidian-task-item ${isChecked ? 'completed' : ''}" data-line-index="${lineIdx}">
+          <input type="checkbox" class="obsidian-task-checkbox" ${isChecked ? 'checked' : ''}>
+          <span>${text}</span>
+        </li>`);
+        return;
+      }
+
+      // Lista de viñetas: - o * o +
+      const bulletMatch = line.match(/^[-*+]\s+(.*)$/);
+      if (bulletMatch) {
+        if (inList !== 'ul') {
+          flushList();
+          output.push('<ul class="obsidian-ul">');
+          inList = 'ul';
+        }
+        output.push(`<li>${parseInline(bulletMatch[1])}</li>`);
+        return;
+      }
+
+      // Lista numerada: 1.
+      const numMatch = line.match(/^\d+\.\s+(.*)$/);
+      if (numMatch) {
+        if (inList !== 'ol') {
+          flushList();
+          output.push('<ol class="obsidian-ol">');
+          inList = 'ol';
+        }
+        output.push(`<li>${parseInline(numMatch[1])}</li>`);
+        return;
+      }
+
+      // Línea vacía de espaciado
+      if (!line.trim()) {
+        flushList();
+        output.push('<div class="obsidian-spacing"></div>');
+        return;
+      }
+
+      // Párrafo estándar
+      flushList();
+      output.push(`<p class="obsidian-p">${parseInline(line)}</p>`);
+    });
+
+    flushList();
+    flushBlockquote();
+
+    let html = output.join('\n');
+
+    // Restaurar bloques protegidos
+    codeBlocks.forEach((block, idx) => {
+      html = html.replace(new RegExp(`§CODEBLOCK${idx}§`, 'g'), block);
+    });
+    inlineCodes.forEach((code, idx) => {
+      html = html.replace(new RegExp(`§INLINECODE${idx}§`, 'g'), code);
+    });
+
+    return html;
+  },
+
+  /**
+   * Alias de compatibilidad para parseObsidianMarkdown
+   */
+  parseMarkdown(md) {
+    return this.parseObsidianMarkdown(md);
   },
 
   /**
@@ -382,12 +724,46 @@ const NotesManager = {
   updateSaveIndicator(status) {
     if (!this.saveStatus) return;
     if (status === 'saving') {
-      this.saveStatus.textContent = 'Guardando...';
-      this.saveStatus.className = 'notes-save-badge saving';
+      this.saveStatus.innerHTML = '<span class="save-status-dot saving"></span> Guardando...';
     } else {
-      this.saveStatus.textContent = 'Guardado ✓';
-      this.saveStatus.className = 'notes-save-badge';
+      this.saveStatus.innerHTML = '<span class="save-status-dot"></span> Guardado';
     }
+  },
+
+  /**
+   * Actualiza los contadores de caracteres y palabras con formato localizado
+   */
+  updateNotesStats() {
+    if (!this.textarea) return;
+    const text = this.textarea.value.trim();
+    const chars = text.length;
+    const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+
+    if (this.charCountEl) {
+      this.charCountEl.textContent = `${chars.toLocaleString()} ${chars === 1 ? 'carácter' : 'caracteres'}`;
+    }
+    if (this.wordCountEl) {
+      this.wordCountEl.textContent = `${words.toLocaleString()} ${words === 1 ? 'palabra' : 'palabras'}`;
+    }
+  },
+
+  /**
+   * Alias de compatibilidad para updateNotesStats
+   */
+  updateCounters() {
+    this.updateNotesStats();
+  },
+
+  /**
+   * Actualiza el subtítulo dinámicamente con el título del curso actual
+   */
+  updateCourseSubtitle() {
+    if (!this.titleEl) return;
+    const courseTitle = (typeof courseManager !== 'undefined' && courseManager.course?.courseTitle)
+      ? courseManager.course.courseTitle
+      : 'Clean Code: Manual de Desarrollo Ágil';
+    this.titleEl.textContent = courseTitle;
+    this.titleEl.title = courseTitle;
   },
 
   /**
@@ -395,7 +771,7 @@ const NotesManager = {
    */
   setupFileEvents() {
     // Botón Anexar Archivo
-    document.getElementById('btnAppendNotesFile')?.addEventListener('click', () => {
+    this.btnAppend?.addEventListener('click', () => {
       this.fileInput?.click();
     });
 
@@ -404,13 +780,12 @@ const NotesManager = {
       if (file) {
         this.appendFileContent(file);
       }
-      // Limpiar input para permitir seleccionar el mismo archivo si es necesario
       if (this.fileInput) this.fileInput.value = '';
     });
 
     // Botón Descargar con Nombre Personalizado
-    document.getElementById('btnDownloadNotes')?.addEventListener('click', () => {
-      this.downloadMarkdownFile();
+    this.btnDownload?.addEventListener('click', () => {
+      this.downloadNotesMarkdown();
     });
   },
 
@@ -441,10 +816,10 @@ const NotesManager = {
       const separator = currentText.trim().length > 0 ? '\n\n---\n\n' : '';
 
       this.textarea.value = currentText + separator + appendedText;
-      this.triggerAutoSave();
+      this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
 
       if (this.currentView === 'preview') {
-        this.renderPreview();
+        this.renderNotesPreview();
       }
 
       if (typeof showToast === 'function') {
@@ -462,10 +837,9 @@ const NotesManager = {
   },
 
   /**
-   * Descarga el contenido actual de la libreta abriendo la ventana del Explorador
-   * del sistema operativo (File System Access API) o descarga directa como respaldo.
+   * Descarga los apuntes en formato .md
    */
-  async downloadMarkdownFile() {
+  async downloadNotesMarkdown() {
     const content = this.textarea ? this.textarea.value : '';
     if (!content.trim()) {
       if (typeof showToast === 'function') {
@@ -474,7 +848,6 @@ const NotesManager = {
       return;
     }
 
-    // Nombre por defecto basado en el título del curso
     const courseTitle = (typeof courseManager !== 'undefined' && courseManager.course?.courseTitle) 
       ? courseManager.course.courseTitle 
       : 'apuntes_curso';
@@ -487,7 +860,7 @@ const NotesManager = {
 
     const defaultFilename = `apuntes_${cleanDefault || 'curso'}.md`;
 
-    // 1. Vía Principal: Ventana nativa del explorador de archivos (File System Access API)
+    // 1. Vía Principal: File System Access API
     if (typeof window.showSaveFilePicker === 'function') {
       try {
         const fileHandle = await window.showSaveFilePicker({
@@ -512,15 +885,12 @@ const NotesManager = {
         }
         return;
       } catch (err) {
-        // Si el usuario canceló en la ventana del explorador, salir silenciosamente
-        if (err.name === 'AbortError') {
-          return;
-        }
+        if (err.name === 'AbortError') return;
         console.warn('Error con showSaveFilePicker, procediendo con descarga estándar:', err);
       }
     }
 
-    // 2. Vía de Respaldo: Descarga directa tradicional sin prompt
+    // 2. Vía de Respaldo: Descarga tradicional con Blob
     try {
       const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -545,91 +915,9 @@ const NotesManager = {
   },
 
   /**
-   * Carga preferencias guardadas de fuente y tamaño
+   * Alias de compatibilidad para downloadNotesMarkdown
    */
-  loadInitialPreferences() {
-    const savedFont = LocalStorageManager.get('notes_pref_font', 'font-jakarta');
-    const savedSize = LocalStorageManager.get('notes_pref_size', '15px');
-
-    this.applyFontFamily(savedFont);
-    this.applyFontSize(savedSize);
-
-    if (this.colorSwatch && this.colorInput) {
-      this.colorSwatch.style.backgroundColor = this.colorInput.value;
-    }
-  },
-
-  /**
-   * Parser nativo y ligero de Markdown para renderizar vista previa
-   * @param {string} md 
-   * @returns {string}
-   */
-  parseMarkdown(md) {
-    if (!md) return '';
-
-    let html = md;
-
-    // Preservar bloques de código con ```
-    const codeBlocks = [];
-    html = html.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gim, (match, lang, code) => {
-      const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
-      codeBlocks.push(`<pre class="notes-code-block"><code>${this.escapeHtml(code.trim())}</code></pre>`);
-      return placeholder;
-    });
-
-    // Código inline `codigo`
-    html = html.replace(/`([^`]+)`/g, (match, code) => {
-      return `<code class="notes-inline-code">${this.escapeHtml(code)}</code>`;
-    });
-
-    // Encabezados H1, H2, H3
-    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-
-    // Citas > texto
-    html = html.replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>');
-
-    // Negrita **texto** o __texto__
-    html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
-    html = html.replace(/__(.*?)__/gim, '<strong>$1</strong>');
-
-    // Cursiva *texto* o _texto_
-    html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
-    html = html.replace(/_(.*?)_/gim, '<em>$1</em>');
-
-    // Línea horizontal --- o ***
-    html = html.replace(/^---$/gim, '<hr>');
-    html = html.replace(/^\*\*\*$/gim, '<hr>');
-
-    // Listas desordenadas (- elemento o * elemento)
-    html = html.replace(/^\s*[-*]\s+(.*)$/gim, '<li>$1</li>');
-    html = html.replace(/(<li>.*<\/li>)/gims, '<ul>$1</ul>');
-
-    // Enlaces [texto](url)
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-
-    // Saltos de línea y párrafos simples
-    html = html.replace(/\n\n+/g, '</p><p>');
-    html = html.replace(/\n/g, '<br>');
-
-    // Restaurar bloques de código
-    codeBlocks.forEach((block, idx) => {
-      html = html.replace(`__CODE_BLOCK_${idx}__`, block);
-    });
-
-    return `<div class="markdown-rendered">${html}</div>`;
-  },
-
-  /**
-   * Escapa caracteres HTML para seguridad
-   */
-  escapeHtml(text) {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+  downloadMarkdownFile() {
+    this.downloadNotesMarkdown();
   }
 };
