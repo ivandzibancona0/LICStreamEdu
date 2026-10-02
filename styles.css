@@ -31,6 +31,34 @@
   --z-toast: 80;
 
   --backdrop-filter: blur(12px);
+
+  /* Paleta Base por Defecto: Lemon Ice-Cream Fallback */
+  --bg-app: #faf7ee;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f4efdf;
+  --bg-input: #fdfbf5;
+  --bg-hover: #ede4ce;
+  --border-subtle: #e4d8ba;
+  --border-focus: #f5b700;
+
+  --text-main: #112443;
+  --text-muted: #3b4e6a;
+  --text-dimmed: #687994;
+
+  --primary: #c98900;
+  --primary-hover: #ad7500;
+  --primary-subtle: rgba(254, 224, 53, 0.25);
+  --primary-glow: rgba(245, 183, 0, 0.35);
+
+  --success: #5f8d12;
+  --success-subtle: rgba(180, 218, 61, 0.22);
+  --danger: #dc2626;
+  --danger-subtle: rgba(220, 38, 38, 0.12);
+  --warning: #d97706;
+
+  --shadow-sm: 0 1px 3px rgba(17, 36, 67, 0.06);
+  --shadow-md: 0 4px 14px rgba(17, 36, 67, 0.08);
+  --shadow-lg: 0 12px 30px rgba(17, 36, 67, 0.12);
 }
 
 /* TEMA 1: Obsidian Dark */
@@ -214,7 +242,7 @@
 }
 
 /* TEMA 7: Lemon Ice-Cream (Predeterminado - Tema Claro Cremoso y Refrescante) */
-[data-theme="lemon"], :root {
+[data-theme="lemon"] {
   --bg-app: #faf7ee;
   --bg-surface: #ffffff;
   --bg-surface-elevated: #f4efdf;
@@ -3000,6 +3028,7 @@ a.btn-icon:hover {
   z-index: 9501;
 }
 
+[data-theme="light"] .tour-highlight-box,
 [data-theme="clean"] .tour-highlight-box {
   box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.65), 0 0 16px rgba(37, 99, 235, 0.4);
 }
